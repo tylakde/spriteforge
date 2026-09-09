@@ -105,3 +105,5 @@ To run the actor integration checks after importing both bundled examples, enabl
 ```
 
 This creates and destroys test actors in the current Editor world, checks the generated material graph, verifies four camera quadrants and a rotated actor heading, and tests animated frame lookup and loop timing. It does not save or modify your level.
+
+On Windows, `scripts/verify-unreal.ps1 -Project C:\path\Project.uproject` runs both included imports and the actor tests together. Use a test project with SpriteForge Importer and Python Editor Script Plugin enabled; it saves the example assets under `/Game/SpriteForge`.

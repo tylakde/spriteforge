@@ -61,7 +61,7 @@ cargo test --manifest-path src-tauri/Cargo.toml
 npm run tauri -- build --bundles deb
 ```
 
-`npm run fixtures` regenerates the original procedural sample assets. CI checks the web workflows and builds a Linux desktop package. Download its artifact from the private repository's Actions page.
+`npm run fixtures` regenerates the original procedural sample assets. CI checks the web workflows and builds Linux and Windows desktop packages. Download its artifact from the private repository's Actions page.
 
 ## Unreal Engine
 
@@ -78,3 +78,5 @@ The plugin and install instructions live in `unreal/SpriteForgeImporter/`; see [
 Ready-to-import static and animated example exports are included in `docs/examples/`.
 
 See [PROGRESS.md](PROGRESS.md) for actual validation status and [DECISIONS.md](DECISIONS.md) for implementation choices.
+
+Locally produced installers and the compiled UE 5.8 Windows plugin are in the ignored `artifacts/` folder. The current Linux package is `artifacts/linux/deb/SpriteForge_1.0.0_amd64.deb`; install it with `sudo apt install ./artifacts/linux/deb/SpriteForge_1.0.0_amd64.deb`. Normal installation resolves the WebKit runtime dependencies. The Windows CI artifact is named `SpriteForge-Windows` when its job completes.

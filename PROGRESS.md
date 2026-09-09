@@ -5,7 +5,7 @@
 - [x] Export, recipes, animation and batch workflows implemented; browser verification underway.
 - [x] Verify real browser generation/export with fixtures.
 - [x] UE5 importer and directional runtime actor (after baker verification).
-- [ ] Final tests, desktop build attempt, documentation and specification audit.
+- [x] Final tests, desktop build, documentation and specification audit.
 
 ## Environment
 Initial environment: Ubuntu 26.04; no Node, Rust or Unreal installation found. Bootstrapping local tools. Repository: https://github.com/tylakde/spriteforge (private).
@@ -27,3 +27,12 @@ Desktop Rust tests passed on the first Linux CI run; release packaging continues
 Unreal Python runtime integration passed with 0 errors and 0 warnings: actor construction, material graph/instance assignment, camera quadrants, logical heading offset, fixed actor ground placement, animated lookup and loop timing. Production Chromium smoke at 1366×768 with the actual desktop CSP passed GLB import, WebAssembly loading, 8-view generation and ZIP export.
 
 First Linux CI desktop job successfully passed Rust tests and built the .deb package; artifact downloaded locally. Windows packaging and the latest-code CI run are still in progress.
+
+Real Runestone reimport passed with 0 errors and 0 warnings, updating existing assets. Windows Rust tests passed on CI; installer packaging is underway.
+
+Latest source (293b8ef) passed all web checks, release Rust tests and Linux .deb packaging in CI run 34413511176. Current Linux installer is in `artifacts/linux/`; compiled Unreal plugin is in `artifacts/SpriteForgeImporter-UE5.8-Win64.zip`.
+
+## Final native workflow verification
+The current Linux package launched in a temporary mount namespace with the missing WebKit/GLES runtime supplied locally. Actual native UI checks passed: textured Runestone preview, eight-direction generation, native folder dialog, and filesystem export of eight PNGs, atlas PNG and JSON. Export contents were inspected and opposite direction PNGs differ. Screenshot: `docs/native-workspace.png`; copied output: `artifacts/native-export/Runestone/`. The isolated test window was closed afterwards; the browser dev server remains available at http://127.0.0.1:1420. Normal native launch still requires the documented OS runtime installation.
+
+Core implementation and validation are complete. The additional Windows installer job in CI run 34413511176 is still compiling; Linux installer, native workflow, Unreal plugin builds/import/reimport/runtime checks, and all web checks have passed.

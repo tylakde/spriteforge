@@ -26,9 +26,9 @@ All four Playwright workflows passed locally under Chromium with SwiftShader. A 
 
 ## Desktop
 
-The source includes Tauri 2, native file/folder dialogs, selected-file access, bounded GLTF sidecar reads, unique export directories, and cleanup after failed writes. Rust unit tests exercise path rejection and non-overwriting exports.
+The source includes Tauri 2, native file/folder dialogs, selected-file access, bounded GLTF sidecar reads, unique export directories, and cleanup after failed writes. Rust unit tests exercise path rejection and non-overwriting exports, and passed on both Linux and Windows CI.
 
-The initial local Linux check could not compile because the WSL environment has no `cc` linker or GTK/WebKit development packages and unattended sudo is unavailable. Node 22 and Rust were installed in user-local directories. Browser testing dependencies were extracted locally without modifying system packages. Desktop tests and packaging run on configured GitHub Linux/Windows runners; final results are recorded in `PROGRESS.md`.
+The initial local Linux check could not compile because the WSL environment has no `cc` linker or GTK/WebKit development packages and unattended sudo is unavailable. Node 22 and Rust were installed in user-local directories. Browser testing dependencies were extracted locally without modifying system packages. The latest source (293b8ef) passed release Rust tests and built a Linux .deb package in [CI run 34413511176](https://github.com/tylakde/spriteforge/actions/runs/34413511176). Desktop tests and packaging run on configured GitHub Linux/Windows runners; final results are recorded in `PROGRESS.md`. A direct launch initially failed because WebKit uses fixed system child-process paths. A temporary mount namespace supplied the locally extracted runtime at those paths, and the current native package then passed actual UI checks: textured sample preview, eight-direction generation, folder selection and native filesystem export. The eight PNGs, atlas PNG and schema v1 JSON were inspected; opposite-direction pixels differ. See `native-workspace.png`. A normal launch outside that test namespace requires installing the documented runtime dependencies.
 
 ## Unreal Engine
 
@@ -37,6 +37,7 @@ Found and used the Windows host's **Unreal Engine 5.8.1**, **MSVC 14.44.35228** 
 - `RunUAT BuildPlugin` completed successfully for Win64 Editor, Development and Shipping configurations.
 - Real Runestone export imported with the plugin commandlet: eight frames; atlas texture, data asset, shared masked material and material instance saved; direction selection verified; exit 0.
 - Real Sentinel export imported with the plugin commandlet: 48 animated frames; corresponding assets saved; direction selection verified; exit 0.
+- Reimport of Runestone updated existing assets and returned 0, with 0 errors and 0 warnings.
 - Import commandlet rejects an unsupported schema version.
 - Runtime actor checks in `tests/unreal/verify_runtime.py` passed with 0 errors and 0 warnings: actor construction, actual material assignment, camera quadrants, heading offset, fixed ground placement, animated frame selection and wraparound.
 
@@ -47,3 +48,7 @@ Unreal validation uses an isolated temporary project, not the user's game projec
 The 15 Definition of Done items are implemented in the source: local launch; file/folder/drop import; textured orbit preview; centering/grounding; configurable recipe; all direction counts; generated view inspection; PNG/atlas/JSON output; recipes; deterministic animation; sequential batch; persistence; controlled errors; local-only operation; test/build commands.
 
 V1 intentionally has a single RGBA pass, one selected animation per bake, no automatic root-motion removal, and no MMORPG LOD manager. Draco and KTX2 assets require decompressed export; Meshopt support is bundled. The runtime uses vertical billboards, local player camera selection and masked alpha; soft transparent materials and split-screen need custom rendering. Atlas limits and texture/mipmap trade-offs are documented in the README and integration guide.
+
+## Additional packaging status
+
+The Windows installer job is still compiling in CI run 34413511176 at handoff. Its completion can be checked on the Actions page. The core desktop build requirement is verified by the successful current Linux package and its actual native workflow.
