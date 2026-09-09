@@ -27,15 +27,15 @@ export async function importNativeFiles():Promise<File[]>{
  const selected=await open({multiple:true,title:'Import GLB or GLTF assets',filters:[{name:'3D assets',extensions:['glb','gltf']}]});
  if(!selected)return [];
  const paths=Array.isArray(selected)?selected:[selected];const files:File[]=[];
- for(const path of paths){
+ for(const [assetIndex,path] of paths.entries()){
   // Resolve a GLTF's declared local resources next to the selected document, without allowing traversal outside its directory.
-  const bytes=await readFile(path);files.push(new File([new Uint8Array(bytes)],path.split(/[\\/]/).pop()!));
+  const bytes=await readFile(path);const main=new File([new Uint8Array(bytes)],path.split(/[\\/]/).pop()!);Object.defineProperty(main,'webkitRelativePath',{value:`native_${assetIndex}/${main.name}`});files.push(main);
   if(/\.gltf$/i.test(path)){
    const doc=JSON.parse(new TextDecoder().decode(bytes));const resources=[...(doc.buffers||[]),...(doc.images||[])];
    for(const item of resources){if(!item.uri||item.uri.startsWith('data:'))continue;const relative=decodeURIComponent(item.uri);
     if(/(^[\\/]|^[a-z]+:|(^|[\\/])\.\.([\\/]|$))/i.test(relative))throw new Error('GLTF resource must be inside the asset folder. Use folder import for complex assets.');
     const resource=await invoke<number[]>('read_sidecar',{assetPath:path,relative});
-    const f=new File([new Uint8Array(resource)],relative.split('/').pop()!);Object.defineProperty(f,'webkitRelativePath',{value:relative});files.push(f);
+    const f=new File([new Uint8Array(resource)],relative.split('/').pop()!);Object.defineProperty(f,'webkitRelativePath',{value:`native_${assetIndex}/${relative}`});files.push(f);
    }
   }
  }

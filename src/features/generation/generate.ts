@@ -1,4 +1,4 @@
-import { ACESFilmicToneMapping, AnimationMixer, Box3, Color, Scene, SRGBColorSpace, WebGLRenderer, WebGLRenderTarget } from 'three';
+import { ACESFilmicToneMapping, AnimationMixer, Box3, Color, Scene, SRGBColorSpace, Vector3, WebGLRenderer, WebGLRenderTarget } from 'three';
 import { loadAsset } from '../assets/loadAsset';
 import { calculateFraming, renderCamera } from '../renderer/framing';
 import { lighting } from '../renderer/lighting';
@@ -27,7 +27,9 @@ export async function renderSequence(source:AssetSource,rawRecipe:RenderRecipe,c
   makeMetadata(source.name,recipe,times,clip?.name||'',0.5,clip?.duration||0);
   const bounds=new Box3();
   if(clip){mixer=new AnimationMixer(asset.root);mixer.clipAction(clip).play();for(let i=0;i<times.length;i++){check();mixer.setTime(times[i]);asset.root.updateMatrixWorld(true);bounds.union(new Box3().setFromObject(asset.root,true));if(i%8===0){onProgress(i/times.length*0.1,'Measuring animation bounds');await yieldToUI();}}}else bounds.copy(asset.bounds);
-  const framing=calculateFraming(bounds,recipe),metadata=makeMetadata(source.name,recipe,times,clip?.name||'',framing.pivotY,clip?.duration||0);
+  const framing=calculateFraming(bounds,recipe);
+  const groundInClip=new Vector3(0,0,0).project(renderCamera(framing,recipe,0));
+  const metadata=makeMetadata(source.name,recipe,times,clip?.name||'',(1-groundInClip.y)/2,clip?.duration||0);
   const scene=new Scene();scene.add(asset.root,lighting(recipe));
   // Render transparent first, then composite backgrounds after optional silhouette processing.
   renderer=new WebGLRenderer({alpha:true,antialias:true,premultipliedAlpha:false,preserveDrawingBuffer:false});renderer.setPixelRatio(1);renderer.setSize(recipe.cellSize,recipe.cellSize,false);renderer.outputColorSpace=SRGBColorSpace;renderer.toneMapping=ACESFilmicToneMapping;renderer.setClearColor(new Color(0),0);

@@ -1,4 +1,5 @@
 import { Box3, Group, LoadingManager, Mesh, Texture, Vector3 } from 'three';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import type { AssetSource, LoadedAsset } from '../../types';
 export function sourcesFromFiles(files:File[]):AssetSource[]{
@@ -27,7 +28,7 @@ export async function loadAsset(source:AssetSource):Promise<LoadedAsset>{
  let root:Group|undefined;
  try {
   const data=await source.file.arrayBuffer();
-  const gltf=await new GLTFLoader(manager).parseAsync(/\.gltf$/i.test(source.name)?new TextDecoder().decode(data):data,'');
+  const gltf=await new GLTFLoader(manager).setMeshoptDecoder(MeshoptDecoder).parseAsync(/\.gltf$/i.test(source.name)?new TextDecoder().decode(data):data,'');
   root=new Group(); root.add(gltf.scene);
   if(missing.length)throw new Error('Missing or unreadable textures. Import the complete asset folder.');
   root.updateMatrixWorld(true);let bounds=new Box3().setFromObject(root,true);

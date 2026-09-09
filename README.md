@@ -68,7 +68,7 @@ The plugin and install instructions live in `unreal/SpriteForgeImporter/`; see [
 ## Limits
 
 - RGBA colour pass only; no normals, depth or production LOD manager in v1.
-- GLB/GLTF with standard PBR materials, embedded or local PNG/JPEG/WebP textures. Draco and KTX2 compressed assets must be re-exported without those compression extensions. Meshopt support is documented in the verification report if enabled.
+- GLB/GLTF with standard PBR materials, embedded or local PNG/JPEG/WebP textures. Draco and KTX2 compressed assets must be re-exported without those compression extensions. Meshopt decoding is bundled locally.
 - Atlas limit: 8192px per dimension and 32 megapixels; reduce resolution/FPS/directions when needed. Animations use a single selected clip per export.
 - No automatic root-motion removal; exported animation retains source motion. Bounds cover every exported pose.
 - Baked lighting is fixed in world space; metallic assets use direct/hemisphere lighting without environment reflections.
