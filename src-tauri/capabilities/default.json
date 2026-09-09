@@ -1,0 +1,1 @@
+{"$schema":"../gen/schemas/desktop-schema.json","identifier":"default","description":"Local SpriteForge window with user-selected files and dialogs","windows":["main"],"permissions":["core:default","dialog:default","fs:allow-read-file","fs:allow-write-file"]}
