@@ -12,3 +12,5 @@ unreal/**/Saved/
 
 *.tsbuildinfo
 src-tauri/gen/
+
+artifacts/

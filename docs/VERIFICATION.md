@@ -22,7 +22,7 @@ Verified on 9 September 2026. The original brief is preserved in the repository 
 | Dependency audit | `npm audit`: zero vulnerabilities. |
 | Formatting | Prettier check and Rust formatting run. |
 
-All four Playwright workflows passed locally under Chromium with SwiftShader. A separate GitHub Actions web job also passed. Tests render real Three.js scenes; they do not mock the renderer or export routines.
+All four Playwright workflows passed locally under Chromium with SwiftShader. A separate GitHub Actions web job also passed. Production Chromium at 1366×768 with the actual Tauri content-security policy also passed WebAssembly loading, sample import, generation and export. Tests render real Three.js scenes; they do not mock the renderer or export routines.
 
 ## Desktop
 
@@ -38,9 +38,9 @@ Found and used the Windows host's **Unreal Engine 5.8.1**, **MSVC 14.44.35228** 
 - Real Runestone export imported with the plugin commandlet: eight frames; atlas texture, data asset, shared masked material and material instance saved; direction selection verified; exit 0.
 - Real Sentinel export imported with the plugin commandlet: 48 animated frames; corresponding assets saved; direction selection verified; exit 0.
 - Import commandlet rejects an unsupported schema version.
-- Runtime actor checks live in `tests/unreal/verify_runtime.py`; final results are recorded in `PROGRESS.md`.
+- Runtime actor checks in `tests/unreal/verify_runtime.py` passed with 0 errors and 0 warnings: actor construction, actual material assignment, camera quadrants, heading offset, fixed ground placement, animated frame selection and wraparound.
 
-Unreal validation uses an isolated temporary project, not the user's game project. The import runs use `-nullrhi`; these results do not constitute an in-game visual quality review. Reimport/actor tests and desktop package results are recorded as they complete.
+Unreal validation uses an isolated temporary project, not the user's game project. The import runs use `-nullrhi`; these results do not constitute an in-game visual quality review. Actor behavior was exercised in the real Editor world through Python. Desktop package results are recorded in the progress file.
 
 ## Scope audit and limitations
 

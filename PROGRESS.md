@@ -22,3 +22,8 @@ UE 5.8.1 Windows BuildPlugin succeeded for Editor, Development and Shipping (MSV
 Four browser integration tests now pass, including 32-view outlined/solid output, full-resolution inspection and invalid recipe input. npm ci, production build and 8 unit tests pass. npm audit reports zero vulnerabilities.
 
 Desktop Rust tests passed on the first Linux CI run; release packaging continues. Current Windows and Linux jobs are building. Browser CI passed on commit 8ad4e37.
+
+## Milestone 4
+Unreal Python runtime integration passed with 0 errors and 0 warnings: actor construction, material graph/instance assignment, camera quadrants, logical heading offset, fixed actor ground placement, animated lookup and loop timing. Production Chromium smoke at 1366×768 with the actual desktop CSP passed GLB import, WebAssembly loading, 8-view generation and ZIP export.
+
+First Linux CI desktop job successfully passed Rust tests and built the .deb package; artifact downloaded locally. Windows packaging and the latest-code CI run are still in progress.
