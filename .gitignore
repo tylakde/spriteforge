@@ -1,0 +1,11 @@
+node_modules/
+dist/
+src-tauri/target/
+playwright-report/
+test-results/
+.env*
+*.log
+.DS_Store
+unreal/**/Binaries/
+unreal/**/Intermediate/
+unreal/**/Saved/
