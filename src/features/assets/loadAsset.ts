@@ -37,6 +37,7 @@ export async function loadAsset(source:AssetSource):Promise<LoadedAsset>{
   let triangles=0,meshes=0;const mats=new Set();
   root.traverse(o=>{if(o instanceof Mesh){meshes++;triangles+=(o.geometry.index?.count??o.geometry.attributes.position?.count??0)/3;for(const m of Array.isArray(o.material)?o.material:[o.material])mats.add(m);o.frustumCulled=false;}});
   if(!meshes||Math.max(...dimensions)<1e-8)throw new Error('Asset has no renderable meshes.');
+  gltf.animations.forEach((clip,i)=>{if(!clip.name)clip.name=`Animation ${i+1}`;});
   const owned=root;
   return {root,bounds,animations:gltf.animations,stats:{triangles:Math.round(triangles),meshes,materials:mats.size,dimensions},dispose:()=>disposeObject(owned)};
  }catch(error){if(root)disposeObject(root);throw new Error(`Could not load ${source.name}: ${error instanceof Error?error.message:'Invalid GLTF data.'}`);}

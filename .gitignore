@@ -9,3 +9,6 @@ test-results/
 unreal/**/Binaries/
 unreal/**/Intermediate/
 unreal/**/Saved/
+
+*.tsbuildinfo
+src-tauri/gen/
