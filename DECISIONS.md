@@ -5,3 +5,7 @@
 - Explicit schema v1 frame records, top-left pixel/UV coordinates, direction-major ordering, local atlas path, and recipe snapshot connect the baker to Unreal.
 - Sequential batch processing with independent errors and unique export folders avoids overwriting existing exports.
 - No runtime network assets, APIs or cloud dependencies. GLTF sidecars are supplied with the asset or selected as a folder.
+
+- Pixel readback flips the WebGL origin and converts associated-alpha RGB to straight-alpha PNG. The MSAA render target is rebound before every frame because asynchronous readback restores the resolved framebuffer.
+- Atlas allocation caps at 8192px per side / 32 megapixels before rendering, with 4096 samples per animation. This bounds GPU/CPU memory and reports actionable errors.
+- No Unreal installation is available locally. UE compilation and Editor behavior must be clearly distinguished from baker validation.

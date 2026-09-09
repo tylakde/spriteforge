@@ -39,7 +39,7 @@ export async function renderSequence(source:AssetSource,rawRecipe:RenderRecipe,c
   const frames:Blob[]=[];
   for(const frame of metadata.frames){
    check();if(mixer){mixer.setTime(frame.time);asset.root.updateMatrixWorld(true);}
-   const camera=renderCamera(framing,recipe,frame.directionDegrees);renderer.render(scene,camera);
+   const camera=renderCamera(framing,recipe,frame.directionDegrees);renderer.setRenderTarget(target);renderer.render(scene,camera);
    await renderer.readRenderTargetPixelsAsync(target,0,0,size,size,readback);
    // WebGL origin is bottom-left, PNG origin is top-left. Render targets store associated alpha.
    for(let y=0;y<size;y++)for(let x=0;x<size;x++){const src=((size-y-1)*size+x)*4,dst=(y*size+x)*4,a=readback[src+3];pixels[dst+3]=a;for(let c=0;c<3;c++)pixels[dst+c]=a?Math.min(255,Math.round(readback[src+c]*255/a)):0;}
