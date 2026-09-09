@@ -1,11 +1,175 @@
-import { useEffect, useState } from 'react';
-import { Layers, X, Play, Pause } from 'lucide-react';
-import type { Generation } from '../types';
-export default function GeneratedViews({generation,stale}:{generation:Generation|null;stale:boolean}){
- const [selected,setSelected]=useState<number|null>(null),[direction,setDirection]=useState<number|''>(''),[play,setPlay]=useState(false),[url,setURL]=useState('');
- useEffect(()=>{setSelected(null);setDirection('');setPlay(false);},[generation]);
- useEffect(()=>{if(selected===null||!generation)return;const url=URL.createObjectURL(generation.frames[selected]);setURL(url);return ()=>URL.revokeObjectURL(url);},[selected,generation]);
- useEffect(()=>{if(!play||!generation||selected===null)return;const f=generation.metadata.frames[selected],clip=generation.metadata.animations[f.animation];if(!clip)return;const timer=setInterval(()=>setSelected(i=>i===null?null:i-f.animationFrame+(f.animationFrame+1)%clip.frameCount),1000/clip.fps);return ()=>clearInterval(timer);},[play,selected,generation]);
- const records=generation?.metadata.frames.filter(f=>direction===''||f.directionDegrees===direction)??[];
- return <section className="generated"><div className="generated-heading"><div><Layers size={15}/><span>GENERATED VIEWS</span><span className="count">{generation?.frames.length??0}</span>{stale&&<span className="stale">Settings changed · regenerate</span>}</div>{generation&&<div><span className="muted">{generation.metadata.atlas.width} × {generation.metadata.atlas.height} atlas</span><select aria-label="View direction" value={direction} onChange={e=>setDirection(e.target.value===''?'':Number(e.target.value))}><option value="">All directions</option>{generation.metadata.directions.map(d=><option key={d} value={d}>{d}°</option>)}</select></div>}</div><div className="frame-strip">{!generation?<div className="frames-empty"><Layers size={24}/><span>Generated sprites will appear here</span><small>Configure your recipe, then generate a bake.</small></div>:records.map(f=><button key={f.index} className="frame-card" onClick={()=>setSelected(f.index)}><img src={generation.thumbnails[f.index]} alt={`Direction ${f.directionDegrees} frame ${f.animationFrame}`}/><span>{f.directionDegrees}° {f.animation&&<small>· {String(f.animationFrame).padStart(3,'0')}</small>}</span></button>)}</div>{selected!==null&&generation&&<div className="modal-backdrop" onClick={()=>{setSelected(null);setPlay(false);}}><div className="frame-modal" role="dialog" aria-modal="true" aria-label="Frame inspection" onClick={e=>e.stopPropagation()}><div className="modal-title"><span>{generation.metadata.frames[selected].file}</span><button aria-label="Close inspection" onClick={()=>{setSelected(null);setPlay(false);}}><X size={18}/></button></div><img className="checker" src={url} alt="Full resolution generated sprite"/><div className="modal-controls"><button onClick={()=>setSelected((selected+generation.frames.length-1)%generation.frames.length)}>Previous</button><span>{selected+1} / {generation.frames.length}</span><button onClick={()=>setPlay(!play)} disabled={!generation.metadata.frames[selected].animation}>{play?<Pause size={15}/>:<Play size={15}/>}</button><button onClick={()=>setSelected((selected+1)%generation.frames.length)}>Next</button></div></div></div>}</section>;
+import { useEffect, useState } from "react";
+import { Layers, X, Play, Pause } from "lucide-react";
+import type { Generation } from "../types";
+export default function GeneratedViews({
+  generation,
+  stale,
+}: {
+  generation: Generation | null;
+  stale: boolean;
+}) {
+  const [selected, setSelected] = useState<number | null>(null),
+    [direction, setDirection] = useState<number | "">(""),
+    [play, setPlay] = useState(false),
+    [url, setURL] = useState("");
+  useEffect(() => {
+    setSelected(null);
+    setDirection("");
+    setPlay(false);
+  }, [generation]);
+  useEffect(() => {
+    if (selected === null || !generation) return;
+    const url = URL.createObjectURL(generation.frames[selected]);
+    setURL(url);
+    return () => URL.revokeObjectURL(url);
+  }, [selected, generation]);
+  useEffect(() => {
+    if (!play || !generation || selected === null) return;
+    const f = generation.metadata.frames[selected],
+      clip = generation.metadata.animations[f.animation];
+    if (!clip) return;
+    const timer = setInterval(
+      () =>
+        setSelected((i) =>
+          i === null
+            ? null
+            : i - f.animationFrame + ((f.animationFrame + 1) % clip.frameCount),
+        ),
+      1000 / clip.fps,
+    );
+    return () => clearInterval(timer);
+  }, [play, selected, generation]);
+  const records =
+    generation?.metadata.frames.filter(
+      (f) => direction === "" || f.directionDegrees === direction,
+    ) ?? [];
+  return (
+    <section className="generated">
+      <div className="generated-heading">
+        <div>
+          <Layers size={15} />
+          <span>GENERATED VIEWS</span>
+          <span className="count">{generation?.frames.length ?? 0}</span>
+          {stale && (
+            <span className="stale">Settings changed · regenerate</span>
+          )}
+        </div>
+        {generation && (
+          <div>
+            <span className="muted">
+              {generation.metadata.atlas.width} ×{" "}
+              {generation.metadata.atlas.height} atlas
+            </span>
+            <select
+              aria-label="View direction"
+              value={direction}
+              onChange={(e) =>
+                setDirection(
+                  e.target.value === "" ? "" : Number(e.target.value),
+                )
+              }
+            >
+              <option value="">All directions</option>
+              {generation.metadata.directions.map((d) => (
+                <option key={d} value={d}>
+                  {d}°
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+      <div className="frame-strip">
+        {!generation ? (
+          <div className="frames-empty">
+            <Layers size={24} />
+            <span>Generated sprites will appear here</span>
+            <small>Configure your recipe, then generate a bake.</small>
+          </div>
+        ) : (
+          records.map((f) => (
+            <button
+              key={f.index}
+              className="frame-card"
+              onClick={() => setSelected(f.index)}
+            >
+              <img
+                src={generation.thumbnails[f.index]}
+                alt={`Direction ${f.directionDegrees} frame ${f.animationFrame}`}
+              />
+              <span>
+                {f.directionDegrees}°{" "}
+                {f.animation && (
+                  <small>· {String(f.animationFrame).padStart(3, "0")}</small>
+                )}
+              </span>
+            </button>
+          ))
+        )}
+      </div>
+      {selected !== null && generation && (
+        <div
+          className="modal-backdrop"
+          onClick={() => {
+            setSelected(null);
+            setPlay(false);
+          }}
+        >
+          <div
+            className="frame-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Frame inspection"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-title">
+              <span>{generation.metadata.frames[selected].file}</span>
+              <button
+                aria-label="Close inspection"
+                onClick={() => {
+                  setSelected(null);
+                  setPlay(false);
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <img
+              className="checker"
+              src={url}
+              alt="Full resolution generated sprite"
+            />
+            <div className="modal-controls">
+              <button
+                onClick={() =>
+                  setSelected(
+                    (selected + generation.frames.length - 1) %
+                      generation.frames.length,
+                  )
+                }
+              >
+                Previous
+              </button>
+              <span>
+                {selected + 1} / {generation.frames.length}
+              </span>
+              <button
+                onClick={() => setPlay(!play)}
+                disabled={!generation.metadata.frames[selected].animation}
+              >
+                {play ? <Pause size={15} /> : <Play size={15} />}
+              </button>
+              <button
+                onClick={() =>
+                  setSelected((selected + 1) % generation.frames.length)
+                }
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
 }

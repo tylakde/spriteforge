@@ -4,7 +4,7 @@
 - [x] Foundation and deterministic static baker.
 - [x] Export, recipes, animation and batch workflows implemented; browser verification underway.
 - [x] Verify real browser generation/export with fixtures.
-- [ ] UE5 importer and directional runtime actor (after baker verification).
+- [x] UE5 importer and directional runtime actor (after baker verification).
 - [ ] Final tests, desktop build attempt, documentation and specification audit.
 
 ## Environment
@@ -15,3 +15,10 @@ Production web build passed; eight core unit tests passed. Procedural static/ani
 
 ## Milestone 2
 All 3 Playwright end-to-end tests passed: static GLB, distinct 8 directions, alpha pixels, atlas/JSON ZIP, persisted preset, malformed input, deterministic animated bake, GLTF sidecars and batch error continuation. MSAA binding bug found by pixel comparisons and fixed. Beginning Unreal work after this verification.
+
+## Milestone 3
+UE 5.8.1 Windows BuildPlugin succeeded for Editor, Development and Shipping (MSVC 14.44). Real static Runestone export imported successfully: 8 frames, atlas texture, data asset, shared material and material instance saved. Real animated Sentinel export imported successfully: 48 frames. Both commandlet runs verified directional selection and returned 0. Runtime actor integration checks are underway.
+
+Four browser integration tests now pass, including 32-view outlined/solid output, full-resolution inspection and invalid recipe input. npm ci, production build and 8 unit tests pass. npm audit reports zero vulnerabilities.
+
+Desktop Rust tests passed on the first Linux CI run; release packaging continues. Current Windows and Linux jobs are building. Browser CI passed on commit 8ad4e37.

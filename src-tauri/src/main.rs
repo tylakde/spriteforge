@@ -1,2 +1,4 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-fn main() { spriteforge_lib::run(); }
+fn main() {
+    spriteforge_lib::run();
+}

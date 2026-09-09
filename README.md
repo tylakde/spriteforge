@@ -2,6 +2,8 @@
 
 A local GLB/GLTF → directional sprite and animated atlas baker for Unreal Engine 5. React, Three.js and Tauri 2. No accounts, hosted backend or runtime cloud service.
 
+![SpriteForge workspace](docs/workspace.png)
+
 ## Run
 
 Requires Node.js 22.12+ and npm.
@@ -72,5 +74,7 @@ The plugin and install instructions live in `unreal/SpriteForgeImporter/`; see [
 - Atlas limit: 8192px per dimension and 32 megapixels; reduce resolution/FPS/directions when needed. Animations use a single selected clip per export.
 - No automatic root-motion removal; exported animation retains source motion. Bounds cover every exported pose.
 - Baked lighting is fixed in world space; metallic assets use direct/hemisphere lighting without environment reflections.
+
+Ready-to-import static and animated example exports are included in `docs/examples/`.
 
 See [PROGRESS.md](PROGRESS.md) for actual validation status and [DECISIONS.md](DECISIONS.md) for implementation choices.

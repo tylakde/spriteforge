@@ -1,0 +1,1073 @@
+{
+  "version": 1,
+  "asset": "Sentinel",
+  "source": "Sentinel.glb",
+  "atlas": {
+    "file": "Sentinel_atlas.png",
+    "width": 476,
+    "height": 476,
+    "cellWidth": 64,
+    "cellHeight": 64,
+    "padding": 2
+  },
+  "directionCount": 8,
+  "directions": [
+    0,
+    45,
+    90,
+    135,
+    180,
+    225,
+    270,
+    315
+  ],
+  "frontDirection": 0,
+  "coordinateSystem": "Y-up; angle 0 = camera at +Z; positive angles toward +X; UV origin top-left",
+  "frameOrdering": "direction-major",
+  "anchor": {
+    "type": "ground",
+    "x": 0.5,
+    "y": 0.8157089914397258
+  },
+  "background": "transparent",
+  "recipe": {
+    "name": "Environment Prop",
+    "cellSize": 64,
+    "projection": "orthographic",
+    "perspectiveFov": 35,
+    "cameraElevation": 15,
+    "frontDirection": 0,
+    "directionCount": 8,
+    "lightAzimuth": 315,
+    "lightElevation": 55,
+    "lightIntensity": 2.5,
+    "ambientIntensity": 1.5,
+    "background": "transparent",
+    "backgroundColor": "#252934",
+    "paddingPercent": 10,
+    "outlineEnabled": false,
+    "outlineWidth": 1,
+    "anchor": "ground",
+    "fps": 6,
+    "atlasLayout": "grid",
+    "atlasPadding": 2,
+    "powerOfTwo": false
+  },
+  "animations": {
+    "Idle": {
+      "fps": 6,
+      "frameCount": 6,
+      "duration": 1
+    }
+  },
+  "frames": [
+    {
+      "index": 0,
+      "file": "Sentinel_Idle_dir000_frame0000.png",
+      "directionDegrees": 0,
+      "animation": "Idle",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 2,
+        "y": 2,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.004201680672268907,
+        "v0": 0.004201680672268907,
+        "u1": 0.13865546218487396,
+        "v1": 0.13865546218487396
+      }
+    },
+    {
+      "index": 1,
+      "file": "Sentinel_Idle_dir000_frame0001.png",
+      "directionDegrees": 0,
+      "animation": "Idle",
+      "animationFrame": 1,
+      "time": 0.16666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 70,
+        "y": 2,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.14705882352941177,
+        "v0": 0.004201680672268907,
+        "u1": 0.2815126050420168,
+        "v1": 0.13865546218487396
+      }
+    },
+    {
+      "index": 2,
+      "file": "Sentinel_Idle_dir000_frame0002.png",
+      "directionDegrees": 0,
+      "animation": "Idle",
+      "animationFrame": 2,
+      "time": 0.3333333333333333,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 138,
+        "y": 2,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.28991596638655465,
+        "v0": 0.004201680672268907,
+        "u1": 0.42436974789915966,
+        "v1": 0.13865546218487396
+      }
+    },
+    {
+      "index": 3,
+      "file": "Sentinel_Idle_dir000_frame0003.png",
+      "directionDegrees": 0,
+      "animation": "Idle",
+      "animationFrame": 3,
+      "time": 0.5,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 206,
+        "y": 2,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.4327731092436975,
+        "v0": 0.004201680672268907,
+        "u1": 0.5672268907563025,
+        "v1": 0.13865546218487396
+      }
+    },
+    {
+      "index": 4,
+      "file": "Sentinel_Idle_dir000_frame0004.png",
+      "directionDegrees": 0,
+      "animation": "Idle",
+      "animationFrame": 4,
+      "time": 0.6666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 274,
+        "y": 2,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.5756302521008403,
+        "v0": 0.004201680672268907,
+        "u1": 0.7100840336134454,
+        "v1": 0.13865546218487396
+      }
+    },
+    {
+      "index": 5,
+      "file": "Sentinel_Idle_dir000_frame0005.png",
+      "directionDegrees": 0,
+      "animation": "Idle",
+      "animationFrame": 5,
+      "time": 0.8333333333333334,
+      "duration": 0.16666666666666663,
+      "rect": {
+        "x": 342,
+        "y": 2,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.7184873949579832,
+        "v0": 0.004201680672268907,
+        "u1": 0.8529411764705882,
+        "v1": 0.13865546218487396
+      }
+    },
+    {
+      "index": 6,
+      "file": "Sentinel_Idle_dir045_frame0000.png",
+      "directionDegrees": 45,
+      "animation": "Idle",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 410,
+        "y": 2,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.8613445378151261,
+        "v0": 0.004201680672268907,
+        "u1": 0.9957983193277311,
+        "v1": 0.13865546218487396
+      }
+    },
+    {
+      "index": 7,
+      "file": "Sentinel_Idle_dir045_frame0001.png",
+      "directionDegrees": 45,
+      "animation": "Idle",
+      "animationFrame": 1,
+      "time": 0.16666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 2,
+        "y": 70,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.004201680672268907,
+        "v0": 0.14705882352941177,
+        "u1": 0.13865546218487396,
+        "v1": 0.2815126050420168
+      }
+    },
+    {
+      "index": 8,
+      "file": "Sentinel_Idle_dir045_frame0002.png",
+      "directionDegrees": 45,
+      "animation": "Idle",
+      "animationFrame": 2,
+      "time": 0.3333333333333333,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 70,
+        "y": 70,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.14705882352941177,
+        "v0": 0.14705882352941177,
+        "u1": 0.2815126050420168,
+        "v1": 0.2815126050420168
+      }
+    },
+    {
+      "index": 9,
+      "file": "Sentinel_Idle_dir045_frame0003.png",
+      "directionDegrees": 45,
+      "animation": "Idle",
+      "animationFrame": 3,
+      "time": 0.5,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 138,
+        "y": 70,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.28991596638655465,
+        "v0": 0.14705882352941177,
+        "u1": 0.42436974789915966,
+        "v1": 0.2815126050420168
+      }
+    },
+    {
+      "index": 10,
+      "file": "Sentinel_Idle_dir045_frame0004.png",
+      "directionDegrees": 45,
+      "animation": "Idle",
+      "animationFrame": 4,
+      "time": 0.6666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 206,
+        "y": 70,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.4327731092436975,
+        "v0": 0.14705882352941177,
+        "u1": 0.5672268907563025,
+        "v1": 0.2815126050420168
+      }
+    },
+    {
+      "index": 11,
+      "file": "Sentinel_Idle_dir045_frame0005.png",
+      "directionDegrees": 45,
+      "animation": "Idle",
+      "animationFrame": 5,
+      "time": 0.8333333333333334,
+      "duration": 0.16666666666666663,
+      "rect": {
+        "x": 274,
+        "y": 70,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.5756302521008403,
+        "v0": 0.14705882352941177,
+        "u1": 0.7100840336134454,
+        "v1": 0.2815126050420168
+      }
+    },
+    {
+      "index": 12,
+      "file": "Sentinel_Idle_dir090_frame0000.png",
+      "directionDegrees": 90,
+      "animation": "Idle",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 342,
+        "y": 70,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.7184873949579832,
+        "v0": 0.14705882352941177,
+        "u1": 0.8529411764705882,
+        "v1": 0.2815126050420168
+      }
+    },
+    {
+      "index": 13,
+      "file": "Sentinel_Idle_dir090_frame0001.png",
+      "directionDegrees": 90,
+      "animation": "Idle",
+      "animationFrame": 1,
+      "time": 0.16666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 410,
+        "y": 70,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.8613445378151261,
+        "v0": 0.14705882352941177,
+        "u1": 0.9957983193277311,
+        "v1": 0.2815126050420168
+      }
+    },
+    {
+      "index": 14,
+      "file": "Sentinel_Idle_dir090_frame0002.png",
+      "directionDegrees": 90,
+      "animation": "Idle",
+      "animationFrame": 2,
+      "time": 0.3333333333333333,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 2,
+        "y": 138,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.004201680672268907,
+        "v0": 0.28991596638655465,
+        "u1": 0.13865546218487396,
+        "v1": 0.42436974789915966
+      }
+    },
+    {
+      "index": 15,
+      "file": "Sentinel_Idle_dir090_frame0003.png",
+      "directionDegrees": 90,
+      "animation": "Idle",
+      "animationFrame": 3,
+      "time": 0.5,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 70,
+        "y": 138,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.14705882352941177,
+        "v0": 0.28991596638655465,
+        "u1": 0.2815126050420168,
+        "v1": 0.42436974789915966
+      }
+    },
+    {
+      "index": 16,
+      "file": "Sentinel_Idle_dir090_frame0004.png",
+      "directionDegrees": 90,
+      "animation": "Idle",
+      "animationFrame": 4,
+      "time": 0.6666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 138,
+        "y": 138,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.28991596638655465,
+        "v0": 0.28991596638655465,
+        "u1": 0.42436974789915966,
+        "v1": 0.42436974789915966
+      }
+    },
+    {
+      "index": 17,
+      "file": "Sentinel_Idle_dir090_frame0005.png",
+      "directionDegrees": 90,
+      "animation": "Idle",
+      "animationFrame": 5,
+      "time": 0.8333333333333334,
+      "duration": 0.16666666666666663,
+      "rect": {
+        "x": 206,
+        "y": 138,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.4327731092436975,
+        "v0": 0.28991596638655465,
+        "u1": 0.5672268907563025,
+        "v1": 0.42436974789915966
+      }
+    },
+    {
+      "index": 18,
+      "file": "Sentinel_Idle_dir135_frame0000.png",
+      "directionDegrees": 135,
+      "animation": "Idle",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 274,
+        "y": 138,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.5756302521008403,
+        "v0": 0.28991596638655465,
+        "u1": 0.7100840336134454,
+        "v1": 0.42436974789915966
+      }
+    },
+    {
+      "index": 19,
+      "file": "Sentinel_Idle_dir135_frame0001.png",
+      "directionDegrees": 135,
+      "animation": "Idle",
+      "animationFrame": 1,
+      "time": 0.16666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 342,
+        "y": 138,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.7184873949579832,
+        "v0": 0.28991596638655465,
+        "u1": 0.8529411764705882,
+        "v1": 0.42436974789915966
+      }
+    },
+    {
+      "index": 20,
+      "file": "Sentinel_Idle_dir135_frame0002.png",
+      "directionDegrees": 135,
+      "animation": "Idle",
+      "animationFrame": 2,
+      "time": 0.3333333333333333,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 410,
+        "y": 138,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.8613445378151261,
+        "v0": 0.28991596638655465,
+        "u1": 0.9957983193277311,
+        "v1": 0.42436974789915966
+      }
+    },
+    {
+      "index": 21,
+      "file": "Sentinel_Idle_dir135_frame0003.png",
+      "directionDegrees": 135,
+      "animation": "Idle",
+      "animationFrame": 3,
+      "time": 0.5,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 2,
+        "y": 206,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.004201680672268907,
+        "v0": 0.4327731092436975,
+        "u1": 0.13865546218487396,
+        "v1": 0.5672268907563025
+      }
+    },
+    {
+      "index": 22,
+      "file": "Sentinel_Idle_dir135_frame0004.png",
+      "directionDegrees": 135,
+      "animation": "Idle",
+      "animationFrame": 4,
+      "time": 0.6666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 70,
+        "y": 206,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.14705882352941177,
+        "v0": 0.4327731092436975,
+        "u1": 0.2815126050420168,
+        "v1": 0.5672268907563025
+      }
+    },
+    {
+      "index": 23,
+      "file": "Sentinel_Idle_dir135_frame0005.png",
+      "directionDegrees": 135,
+      "animation": "Idle",
+      "animationFrame": 5,
+      "time": 0.8333333333333334,
+      "duration": 0.16666666666666663,
+      "rect": {
+        "x": 138,
+        "y": 206,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.28991596638655465,
+        "v0": 0.4327731092436975,
+        "u1": 0.42436974789915966,
+        "v1": 0.5672268907563025
+      }
+    },
+    {
+      "index": 24,
+      "file": "Sentinel_Idle_dir180_frame0000.png",
+      "directionDegrees": 180,
+      "animation": "Idle",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 206,
+        "y": 206,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.4327731092436975,
+        "v0": 0.4327731092436975,
+        "u1": 0.5672268907563025,
+        "v1": 0.5672268907563025
+      }
+    },
+    {
+      "index": 25,
+      "file": "Sentinel_Idle_dir180_frame0001.png",
+      "directionDegrees": 180,
+      "animation": "Idle",
+      "animationFrame": 1,
+      "time": 0.16666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 274,
+        "y": 206,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.5756302521008403,
+        "v0": 0.4327731092436975,
+        "u1": 0.7100840336134454,
+        "v1": 0.5672268907563025
+      }
+    },
+    {
+      "index": 26,
+      "file": "Sentinel_Idle_dir180_frame0002.png",
+      "directionDegrees": 180,
+      "animation": "Idle",
+      "animationFrame": 2,
+      "time": 0.3333333333333333,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 342,
+        "y": 206,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.7184873949579832,
+        "v0": 0.4327731092436975,
+        "u1": 0.8529411764705882,
+        "v1": 0.5672268907563025
+      }
+    },
+    {
+      "index": 27,
+      "file": "Sentinel_Idle_dir180_frame0003.png",
+      "directionDegrees": 180,
+      "animation": "Idle",
+      "animationFrame": 3,
+      "time": 0.5,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 410,
+        "y": 206,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.8613445378151261,
+        "v0": 0.4327731092436975,
+        "u1": 0.9957983193277311,
+        "v1": 0.5672268907563025
+      }
+    },
+    {
+      "index": 28,
+      "file": "Sentinel_Idle_dir180_frame0004.png",
+      "directionDegrees": 180,
+      "animation": "Idle",
+      "animationFrame": 4,
+      "time": 0.6666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 2,
+        "y": 274,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.004201680672268907,
+        "v0": 0.5756302521008403,
+        "u1": 0.13865546218487396,
+        "v1": 0.7100840336134454
+      }
+    },
+    {
+      "index": 29,
+      "file": "Sentinel_Idle_dir180_frame0005.png",
+      "directionDegrees": 180,
+      "animation": "Idle",
+      "animationFrame": 5,
+      "time": 0.8333333333333334,
+      "duration": 0.16666666666666663,
+      "rect": {
+        "x": 70,
+        "y": 274,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.14705882352941177,
+        "v0": 0.5756302521008403,
+        "u1": 0.2815126050420168,
+        "v1": 0.7100840336134454
+      }
+    },
+    {
+      "index": 30,
+      "file": "Sentinel_Idle_dir225_frame0000.png",
+      "directionDegrees": 225,
+      "animation": "Idle",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 138,
+        "y": 274,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.28991596638655465,
+        "v0": 0.5756302521008403,
+        "u1": 0.42436974789915966,
+        "v1": 0.7100840336134454
+      }
+    },
+    {
+      "index": 31,
+      "file": "Sentinel_Idle_dir225_frame0001.png",
+      "directionDegrees": 225,
+      "animation": "Idle",
+      "animationFrame": 1,
+      "time": 0.16666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 206,
+        "y": 274,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.4327731092436975,
+        "v0": 0.5756302521008403,
+        "u1": 0.5672268907563025,
+        "v1": 0.7100840336134454
+      }
+    },
+    {
+      "index": 32,
+      "file": "Sentinel_Idle_dir225_frame0002.png",
+      "directionDegrees": 225,
+      "animation": "Idle",
+      "animationFrame": 2,
+      "time": 0.3333333333333333,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 274,
+        "y": 274,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.5756302521008403,
+        "v0": 0.5756302521008403,
+        "u1": 0.7100840336134454,
+        "v1": 0.7100840336134454
+      }
+    },
+    {
+      "index": 33,
+      "file": "Sentinel_Idle_dir225_frame0003.png",
+      "directionDegrees": 225,
+      "animation": "Idle",
+      "animationFrame": 3,
+      "time": 0.5,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 342,
+        "y": 274,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.7184873949579832,
+        "v0": 0.5756302521008403,
+        "u1": 0.8529411764705882,
+        "v1": 0.7100840336134454
+      }
+    },
+    {
+      "index": 34,
+      "file": "Sentinel_Idle_dir225_frame0004.png",
+      "directionDegrees": 225,
+      "animation": "Idle",
+      "animationFrame": 4,
+      "time": 0.6666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 410,
+        "y": 274,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.8613445378151261,
+        "v0": 0.5756302521008403,
+        "u1": 0.9957983193277311,
+        "v1": 0.7100840336134454
+      }
+    },
+    {
+      "index": 35,
+      "file": "Sentinel_Idle_dir225_frame0005.png",
+      "directionDegrees": 225,
+      "animation": "Idle",
+      "animationFrame": 5,
+      "time": 0.8333333333333334,
+      "duration": 0.16666666666666663,
+      "rect": {
+        "x": 2,
+        "y": 342,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.004201680672268907,
+        "v0": 0.7184873949579832,
+        "u1": 0.13865546218487396,
+        "v1": 0.8529411764705882
+      }
+    },
+    {
+      "index": 36,
+      "file": "Sentinel_Idle_dir270_frame0000.png",
+      "directionDegrees": 270,
+      "animation": "Idle",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 70,
+        "y": 342,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.14705882352941177,
+        "v0": 0.7184873949579832,
+        "u1": 0.2815126050420168,
+        "v1": 0.8529411764705882
+      }
+    },
+    {
+      "index": 37,
+      "file": "Sentinel_Idle_dir270_frame0001.png",
+      "directionDegrees": 270,
+      "animation": "Idle",
+      "animationFrame": 1,
+      "time": 0.16666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 138,
+        "y": 342,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.28991596638655465,
+        "v0": 0.7184873949579832,
+        "u1": 0.42436974789915966,
+        "v1": 0.8529411764705882
+      }
+    },
+    {
+      "index": 38,
+      "file": "Sentinel_Idle_dir270_frame0002.png",
+      "directionDegrees": 270,
+      "animation": "Idle",
+      "animationFrame": 2,
+      "time": 0.3333333333333333,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 206,
+        "y": 342,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.4327731092436975,
+        "v0": 0.7184873949579832,
+        "u1": 0.5672268907563025,
+        "v1": 0.8529411764705882
+      }
+    },
+    {
+      "index": 39,
+      "file": "Sentinel_Idle_dir270_frame0003.png",
+      "directionDegrees": 270,
+      "animation": "Idle",
+      "animationFrame": 3,
+      "time": 0.5,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 274,
+        "y": 342,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.5756302521008403,
+        "v0": 0.7184873949579832,
+        "u1": 0.7100840336134454,
+        "v1": 0.8529411764705882
+      }
+    },
+    {
+      "index": 40,
+      "file": "Sentinel_Idle_dir270_frame0004.png",
+      "directionDegrees": 270,
+      "animation": "Idle",
+      "animationFrame": 4,
+      "time": 0.6666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 342,
+        "y": 342,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.7184873949579832,
+        "v0": 0.7184873949579832,
+        "u1": 0.8529411764705882,
+        "v1": 0.8529411764705882
+      }
+    },
+    {
+      "index": 41,
+      "file": "Sentinel_Idle_dir270_frame0005.png",
+      "directionDegrees": 270,
+      "animation": "Idle",
+      "animationFrame": 5,
+      "time": 0.8333333333333334,
+      "duration": 0.16666666666666663,
+      "rect": {
+        "x": 410,
+        "y": 342,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.8613445378151261,
+        "v0": 0.7184873949579832,
+        "u1": 0.9957983193277311,
+        "v1": 0.8529411764705882
+      }
+    },
+    {
+      "index": 42,
+      "file": "Sentinel_Idle_dir315_frame0000.png",
+      "directionDegrees": 315,
+      "animation": "Idle",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 2,
+        "y": 410,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.004201680672268907,
+        "v0": 0.8613445378151261,
+        "u1": 0.13865546218487396,
+        "v1": 0.9957983193277311
+      }
+    },
+    {
+      "index": 43,
+      "file": "Sentinel_Idle_dir315_frame0001.png",
+      "directionDegrees": 315,
+      "animation": "Idle",
+      "animationFrame": 1,
+      "time": 0.16666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 70,
+        "y": 410,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.14705882352941177,
+        "v0": 0.8613445378151261,
+        "u1": 0.2815126050420168,
+        "v1": 0.9957983193277311
+      }
+    },
+    {
+      "index": 44,
+      "file": "Sentinel_Idle_dir315_frame0002.png",
+      "directionDegrees": 315,
+      "animation": "Idle",
+      "animationFrame": 2,
+      "time": 0.3333333333333333,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 138,
+        "y": 410,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.28991596638655465,
+        "v0": 0.8613445378151261,
+        "u1": 0.42436974789915966,
+        "v1": 0.9957983193277311
+      }
+    },
+    {
+      "index": 45,
+      "file": "Sentinel_Idle_dir315_frame0003.png",
+      "directionDegrees": 315,
+      "animation": "Idle",
+      "animationFrame": 3,
+      "time": 0.5,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 206,
+        "y": 410,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.4327731092436975,
+        "v0": 0.8613445378151261,
+        "u1": 0.5672268907563025,
+        "v1": 0.9957983193277311
+      }
+    },
+    {
+      "index": 46,
+      "file": "Sentinel_Idle_dir315_frame0004.png",
+      "directionDegrees": 315,
+      "animation": "Idle",
+      "animationFrame": 4,
+      "time": 0.6666666666666666,
+      "duration": 0.16666666666666666,
+      "rect": {
+        "x": 274,
+        "y": 410,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.5756302521008403,
+        "v0": 0.8613445378151261,
+        "u1": 0.7100840336134454,
+        "v1": 0.9957983193277311
+      }
+    },
+    {
+      "index": 47,
+      "file": "Sentinel_Idle_dir315_frame0005.png",
+      "directionDegrees": 315,
+      "animation": "Idle",
+      "animationFrame": 5,
+      "time": 0.8333333333333334,
+      "duration": 0.16666666666666663,
+      "rect": {
+        "x": 342,
+        "y": 410,
+        "width": 64,
+        "height": 64
+      },
+      "uv": {
+        "u0": 0.7184873949579832,
+        "v0": 0.8613445378151261,
+        "u1": 0.8529411764705882,
+        "v1": 0.9957983193277311
+      }
+    }
+  ]
+}

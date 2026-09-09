@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "asset": "Runestone",
+  "source": "Runestone.glb",
+  "atlas": {
+    "file": "Runestone_atlas.png",
+    "width": 780,
+    "height": 780,
+    "cellWidth": 256,
+    "cellHeight": 256,
+    "padding": 2
+  },
+  "directionCount": 8,
+  "directions": [
+    0,
+    45,
+    90,
+    135,
+    180,
+    225,
+    270,
+    315
+  ],
+  "frontDirection": 0,
+  "coordinateSystem": "Y-up; angle 0 = camera at +Z; positive angles toward +X; UV origin top-left",
+  "frameOrdering": "direction-major",
+  "anchor": {
+    "type": "ground",
+    "x": 0.5,
+    "y": 0.8156363801649678
+  },
+  "background": "transparent",
+  "recipe": {
+    "name": "Environment Prop",
+    "cellSize": 256,
+    "projection": "orthographic",
+    "perspectiveFov": 35,
+    "cameraElevation": 15,
+    "frontDirection": 0,
+    "directionCount": 8,
+    "lightAzimuth": 315,
+    "lightElevation": 55,
+    "lightIntensity": 2.5,
+    "ambientIntensity": 1.5,
+    "background": "transparent",
+    "backgroundColor": "#252934",
+    "paddingPercent": 10,
+    "outlineEnabled": false,
+    "outlineWidth": 1,
+    "anchor": "ground",
+    "fps": 12,
+    "atlasLayout": "grid",
+    "atlasPadding": 2,
+    "powerOfTwo": false
+  },
+  "animations": {},
+  "frames": [
+    {
+      "index": 0,
+      "file": "Runestone_dir000.png",
+      "directionDegrees": 0,
+      "animation": "",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0,
+      "rect": {
+        "x": 2,
+        "y": 2,
+        "width": 256,
+        "height": 256
+      },
+      "uv": {
+        "u0": 0.002564102564102564,
+        "v0": 0.002564102564102564,
+        "u1": 0.33076923076923076,
+        "v1": 0.33076923076923076
+      }
+    },
+    {
+      "index": 1,
+      "file": "Runestone_dir045.png",
+      "directionDegrees": 45,
+      "animation": "",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0,
+      "rect": {
+        "x": 262,
+        "y": 2,
+        "width": 256,
+        "height": 256
+      },
+      "uv": {
+        "u0": 0.33589743589743587,
+        "v0": 0.002564102564102564,
+        "u1": 0.6641025641025641,
+        "v1": 0.33076923076923076
+      }
+    },
+    {
+      "index": 2,
+      "file": "Runestone_dir090.png",
+      "directionDegrees": 90,
+      "animation": "",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0,
+      "rect": {
+        "x": 522,
+        "y": 2,
+        "width": 256,
+        "height": 256
+      },
+      "uv": {
+        "u0": 0.6692307692307692,
+        "v0": 0.002564102564102564,
+        "u1": 0.9974358974358974,
+        "v1": 0.33076923076923076
+      }
+    },
+    {
+      "index": 3,
+      "file": "Runestone_dir135.png",
+      "directionDegrees": 135,
+      "animation": "",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0,
+      "rect": {
+        "x": 2,
+        "y": 262,
+        "width": 256,
+        "height": 256
+      },
+      "uv": {
+        "u0": 0.002564102564102564,
+        "v0": 0.33589743589743587,
+        "u1": 0.33076923076923076,
+        "v1": 0.6641025641025641
+      }
+    },
+    {
+      "index": 4,
+      "file": "Runestone_dir180.png",
+      "directionDegrees": 180,
+      "animation": "",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0,
+      "rect": {
+        "x": 262,
+        "y": 262,
+        "width": 256,
+        "height": 256
+      },
+      "uv": {
+        "u0": 0.33589743589743587,
+        "v0": 0.33589743589743587,
+        "u1": 0.6641025641025641,
+        "v1": 0.6641025641025641
+      }
+    },
+    {
+      "index": 5,
+      "file": "Runestone_dir225.png",
+      "directionDegrees": 225,
+      "animation": "",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0,
+      "rect": {
+        "x": 522,
+        "y": 262,
+        "width": 256,
+        "height": 256
+      },
+      "uv": {
+        "u0": 0.6692307692307692,
+        "v0": 0.33589743589743587,
+        "u1": 0.9974358974358974,
+        "v1": 0.6641025641025641
+      }
+    },
+    {
+      "index": 6,
+      "file": "Runestone_dir270.png",
+      "directionDegrees": 270,
+      "animation": "",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0,
+      "rect": {
+        "x": 2,
+        "y": 522,
+        "width": 256,
+        "height": 256
+      },
+      "uv": {
+        "u0": 0.002564102564102564,
+        "v0": 0.6692307692307692,
+        "u1": 0.33076923076923076,
+        "v1": 0.9974358974358974
+      }
+    },
+    {
+      "index": 7,
+      "file": "Runestone_dir315.png",
+      "directionDegrees": 315,
+      "animation": "",
+      "animationFrame": 0,
+      "time": 0,
+      "duration": 0,
+      "rect": {
+        "x": 262,
+        "y": 522,
+        "width": 256,
+        "height": 256
+      },
+      "uv": {
+        "u0": 0.33589743589743587,
+        "v0": 0.6692307692307692,
+        "u1": 0.6641025641025641,
+        "v1": 0.9974358974358974
+      }
+    }
+  ]
+}

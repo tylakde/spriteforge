@@ -8,4 +8,4 @@
 
 - Pixel readback flips the WebGL origin and converts associated-alpha RGB to straight-alpha PNG. The MSAA render target is rebound before every frame because asynchronous readback restores the resolved framebuffer.
 - Atlas allocation caps at 8192px per side / 32 megapixels before rendering, with 4096 samples per animation. This bounds GPU/CPU memory and reports actionable errors.
-- No Unreal installation is available locally. UE compilation and Editor behavior must be clearly distinguished from baker validation.
+- Unreal Engine 5.8.1 and MSVC 14.44 were discovered on the Windows host mounted into WSL. The plugin is compiled against that installation and verified in a separate temporary project.
