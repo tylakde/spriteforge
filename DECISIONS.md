@@ -12,3 +12,6 @@
 
 - Style changes are deterministic local rendering operations, independent of asset purpose presets. Pixel styles render to a lower-resolution WebGL target and upscale with nearest-neighbour sampling; colour quantisation/dithering use fixed parameters across all directions and animation frames. Cartoon style uses a nearest-filtered toon lighting ramp while preserving texture, alpha and emissive maps. Hybrid retains softened PBR lighting.
 - Three-style sets share a recorded `framingOutlineWidth` margin, keeping output pivots and camera scale identical and allowing individual recipe re-bakes to reproduce the result. Style suffixes identify distinct UE assets; schema v1's optional appearance metadata controls nearest/bilinear import filtering without invalidating old exports.
+
+- The catalogue contains exactly 15 styles including Original PBR. Shared style definitions drive recipe validation, material shading families, pixel sampling, fixed palettes and post-processing. Existing style IDs remain stable.
+- Multi-style selection is explicit and persistent. Output is sequential and capped at 128 megapixels across the selection before rendering; all chosen sets use the same maximum outline framing margin. Catalogue version 2 adds missing new presets once without overwriting custom recipes.

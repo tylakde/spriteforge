@@ -60,3 +60,11 @@ The Windows installer job is still compiling in CI run 34413511176 at handoff. I
 - Production build and desktop-CSP browser smoke passed. Generated comparison screenshots and all three example export sets are checked in under `docs/`.
 - UE5.8 Editor build passed. Three generated style atlases were imported into separate data assets; actual Unreal texture properties are nearest for Pixel Fantasy / Pixel Realism and bilinear for Painted Cartoon. `tests/unreal/verify_styles.py` also verified matching pivots and persisted recipe styles, logging `SPRITEFORGE_STYLES_OK` and returning 0.
 - These are local rendering treatments; they do not generate new model geometry or repaint source texture artwork.
+
+## Exactly 15 total styles — 10 September 2026
+
+- Catalogue has 15 entries including Original PBR, with 14 named treatments and unchanged IDs for the earlier three.
+- 16 unit tests pass: catalogue cardinality, default validity, palette mapping, coloured outlines, clay material restoration/cutout-alpha handling, selection validation and multi-style memory budgeting.
+- All 9 Playwright workflows pass. The full 15-style bake/export produced 15 distinct front-frame hashes and identical pivots, with 8 views per style. Handheld output uses at most four opaque colours. Empty selection disables baking; selected subsets and custom recipes survive reload/migration. Existing static, animated, export and malformed-input workflows pass.
+- Visual review: `docs/fifteen-styles.png`. The comparison supports compact overview, larger previews, shared frame navigation and horizontal style tabs.
+- Existing Unreal appearance/filter metadata is reused without importer changes.

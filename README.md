@@ -52,24 +52,37 @@ Runestone/
 
 ## Art styles and variation sets
 
-Choose **Art style** in the recipe panel, or select one of the new built-in presets:
+The catalogue contains **15 styles total**, including Original PBR and the original three stylised treatments:
 
 | Style | Treatment |
 | --- | --- |
-| Pixel Fantasy | Coarse 4× pixel blocks, reduced colour steps, subtle fixed dithering and crisp alpha silhouettes. |
-| Painted Cartoon | Warcraft-inspired matte toon lighting, configurable shading bands, richer colour and a smooth outline. |
-| Pixel Realism | Finer 2× pixels, restrained colour grading and retained textured lighting detail. |
-| Original PBR | The original material rendering. Legacy recipes load in this mode. |
+| Original PBR | Source materials and smooth lighting. |
+| Pixel Fantasy | Chunky pixels, stepped colours and crisp silhouettes. |
+| Painted Cartoon | Warcraft-inspired matte toon lighting and bold colour. |
+| Pixel Realism | Fine pixels with retained surface detail. |
+| Retro 8 Bit | Large pixel blocks and a fixed 16-colour palette. |
+| Handheld Green | Four green tones and ordered dithering. |
+| Arcade 16 Bit | Fine pixels and a vivid fixed 32-colour palette. |
+| Comic Cel | Two shading bands, saturated colours and heavy contours. |
+| Pastel Storybook | Soft colours, gentle toon shading and violet outlines. |
+| Terracotta Clay | Warm matte clay; source colour textures are suppressed while cutout alpha is retained. |
+| Ink Engraving | Ivory and black ink with fixed crosshatching. |
+| Arcane Blueprint | Cyan contours and surface lines on deep blue shading. |
+| Sepia Relic | Bronze shadows and parchment highlights. |
+| Frost Crystal | Icy blue shading and glacial highlights. |
+| Ember Forged | Charcoal shadows, copper midtones and gold highlights. |
 
-**Tune appearance** exposes pixel block size, colour steps, saturation, contrast, dithering and (for cartoon) shading bands. Cell size still controls the exported PNG dimensions. Stylisation changes rendering; it preserves the source geometry and texture artwork. The inspection viewport shows the original asset; generated views show the baked style.
+Select an **Art style** and use **Generate** for one customised set. **Tune appearance** exposes relevant pixel size, colour, dithering, outline and shading-band controls. Cell size always remains the final PNG size. The inspection viewport shows the original asset; generated views show the treatment.
 
-**Bake 3 style sets** generates the three default looks sequentially using your current camera, output dimensions, directions and animation settings. It reserves identical framing across the sets. Use the style tabs to select a set, **Compare** for a large side-by-side view, and **Export 3 sets** for a single ZIP or native folder containing all styles. Tune an individual style and use **Generate** to customise it; ordinary batch processing uses the selected recipe's style.
+For multiple sets, expand **Choose styles**, tick any subset, or use **Select all 15**, then **Bake 15 style sets**. **Original trio** restores the previous three-style selection. Your selection and recipes persist across restarts; existing custom presets survive the catalogue upgrade.
 
-Exports use distinct asset names such as `Runestone_Pixel_Fantasy`, `Runestone_Painted_Cartoon` and `Runestone_Pixel_Realism`, so Unreal imports coexist. Appearance/filter settings and the shared framing margin are saved in recipes and metadata. Re-generating a selected variation reproduces its original framing.
+Style sets share camera, framing, direction angles and animation times. Scroll the style tabs to select a result, open **Compare** for a compact overview or larger previews, and use **Export N sets** for a single ZIP/native folder with separately named assets. Multi-set output is capped at 128 megapixels; reduce cell size, FPS, directions or selected styles for large animations. Cancellation retains previous successful results.
 
-![Style comparison](docs/style-comparison.png)
+Exports use distinct asset names, so all styles coexist in Unreal. The importer uses nearest-neighbour filtering for pixelated styles and bilinear for smooth styles. Fixed palettes and screen-locked patterns are deterministic; these are local rendering treatments, not newly generated geometry or hand-painted textures.
 
-Ready-to-import example sets are in `docs/examples/styles/`. The updated Unreal importer applies nearest-neighbour filtering to pixelated styles and bilinear filtering to smooth styles.
+![15-style comparison](docs/fifteen-styles.png)
+
+The original three ready-to-import example sets remain in `docs/examples/styles/`.
 
 ## Development and checks
 

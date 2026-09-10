@@ -46,3 +46,5 @@ Style variation verification complete: 13 unit tests; all 7 Playwright workflows
 ## 15-style catalogue — 10 September 2026
 
 Expanded to exactly 15 art styles total (Original PBR + 14 treatments), keeping the existing four. Added fixed retro/handheld/arcade palettes, comic, pastel, clay, ink, blueprint, sepia, frost and ember. Added persistent subset selection, select-all, scrollable tabs, a compact comparison overview and a combined output memory budget. Initial 16 unit tests and production build pass; full browser validation underway.
+
+15-style validation passed: 16 unit tests and all 9 browser workflows. The full 15-set bake produced unique frame PNGs for every treatment, identical pivots and 15 separately named exports. Verified four-colour handheld pixels, subset persistence, original-trio compatibility and migration from both legacy recipe formats. Visually reviewed the complete overview (`docs/fifteen-styles.png`). Sample export ZIP saved under `artifacts/SpriteForge-15-Style-Samples.zip`.

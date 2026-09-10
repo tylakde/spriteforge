@@ -215,6 +215,7 @@ export const styleDefaults: Record<SpriteStyle, Partial<RenderRecipe>> = {
     contrast: 1.2,
     dither: 0.45,
     outlineEnabled: true,
+    outlineColor: "#171725",
   }),
   handheld: defaults("handheld", {
     pixelScale: 8,
