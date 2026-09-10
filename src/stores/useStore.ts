@@ -7,7 +7,15 @@ import {
   stylePresets,
 } from "../features/recipes/recipes";
 import type { RenderRecipe } from "../types";
+import {
+  defaultVariationStyles,
+  validateStyleSelection,
+  type SpriteStyle,
+} from "../features/styles/styles";
 interface State {
+  styleCatalogVersion: number;
+  styleSelection: SpriteStyle[];
+  selectStyles: (styles: SpriteStyle[]) => void;
   recipe: RenderRecipe;
   presets: RenderRecipe[];
   grid: boolean;
@@ -26,6 +34,10 @@ interface State {
 export const useStore = create<State>()(
   persist(
     (set, get) => ({
+      styleCatalogVersion: 2,
+      styleSelection: [...defaultVariationStyles],
+      selectStyles: (styles) =>
+        set({ styleSelection: validateStyleSelection(styles) }),
       recipe: { ...baseRecipe },
       presets: builtins.map((x) => ({ ...x })),
       grid: true,
@@ -70,16 +82,29 @@ export const useStore = create<State>()(
         grid,
         previewBackground,
         outputMode,
-      }) => ({ recipe, presets, grid, previewBackground, outputMode }),
+        styleSelection,
+        styleCatalogVersion,
+      }) => ({
+        recipe,
+        presets,
+        grid,
+        previewBackground,
+        outputMode,
+        styleSelection,
+        styleCatalogVersion,
+      }),
       merge: (saved, current) => {
         try {
           const s = saved as State;
           return {
             ...current,
             recipe: validateRecipe(s.recipe),
+            styleSelection: Array.isArray(s.styleSelection)
+              ? validateStyleSelection(s.styleSelection)
+              : [...defaultVariationStyles],
             presets: [
               ...s.presets.map(validateRecipe),
-              ...(!("style" in s.recipe)
+              ...(s.styleCatalogVersion !== 2
                 ? stylePresets.filter(
                     (p) => !s.presets.some((saved) => saved.name === p.name),
                   )

@@ -1168,3 +1168,59 @@ progress {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.style-selection-actions {
+  display: flex;
+  gap: 5px;
+  margin: 5px 0 9px;
+  flex-wrap: wrap;
+}
+.style-selection-actions button {
+  font-size: 9px;
+  padding: 4px 6px;
+  min-height: 24px;
+}
+.style-picker .check {
+  margin: 0;
+  min-height: 25px;
+}
+.style-picker {
+  max-height: 310px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.variation-options {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding: 2px 0 5px;
+}
+.variation-options button {
+  flex: 0 0 185px;
+}
+.style-comparison-modal .modal-title {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #20242c;
+}
+.style-comparison-modal .modal-controls {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  background: #20242c;
+  border-top: 1px solid #39414e;
+}
+.style-comparison-images.overview {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+.style-comparison-images.overview img {
+  height: min(17vh, 160px);
+  aspect-ratio: auto;
+}
+.style-comparison-images.overview figcaption {
+  padding: 4px 0 7px;
+  font-size: 10px;
+}
+.style-comparison-images.overview small {
+  display: none;
+}

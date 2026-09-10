@@ -18,6 +18,8 @@ import {
   applyStyle,
   styleDefinitions,
   type SpriteStyle,
+  allStyles,
+  defaultVariationStyles,
 } from "../features/styles/styles";
 export default function RecipePanel({
   disabled,
@@ -39,6 +41,8 @@ export default function RecipePanel({
     renamePreset,
     deletePreset,
     reset,
+    styleSelection,
+    selectStyles,
   } = useStore();
   const [name, setName] = useState(r.name);
   const input = useRef<HTMLInputElement>(null);
@@ -235,21 +239,68 @@ export default function RecipePanel({
               <summary>
                 <ChevronDown size={13} /> Tune appearance
               </summary>
-              {(r.style === "pixel" || r.style === "hybrid") &&
+              {styleDefinitions[r.style].pixelated &&
                 select("Pixel block size", "pixelScale", [1, 2, 4, 8])}
               {num("Colour steps", "colorSteps", 2, 64)}
               {num("Saturation", "saturation", 0, 2, 0.05)}
               {num("Contrast", "contrast", 0.5, 1.75, 0.05)}
               {num("Dithering", "dither", 0, 1, 0.05)}
-              {r.style === "cartoon" && num("Shading bands", "toonBands", 2, 8)}
+              {styleDefinitions[r.style].shading === "toon" &&
+                num("Shading bands", "toonBands", 2, 8)}
+              <label className="field">
+                <span>Outline colour</span>
+                <input
+                  aria-label="Outline colour"
+                  type="color"
+                  value={r.outlineColor}
+                  onChange={(e) => update({ outlineColor: e.target.value })}
+                />
+              </label>
             </details>
           )}
+          <details className="style-tuning style-picker">
+            <summary>
+              <ChevronDown size={13} /> Choose styles ({styleSelection.length} /{" "}
+              {allStyles.length})
+            </summary>
+            <div className="style-selection-actions">
+              <button onClick={() => selectStyles([...allStyles])}>
+                Select all 15
+              </button>
+              <button onClick={() => selectStyles([])}>Clear</button>
+              <button onClick={() => selectStyles([...defaultVariationStyles])}>
+                Original trio
+              </button>
+            </div>
+            {allStyles.map((style) => (
+              <label
+                className="check"
+                title={styleDefinitions[style].description}
+                key={style}
+              >
+                <input
+                  type="checkbox"
+                  aria-label={`Include ${styleDefinitions[style].label}`}
+                  checked={styleSelection.includes(style)}
+                  onChange={(e) =>
+                    selectStyles(
+                      e.target.checked
+                        ? [...styleSelection, style]
+                        : styleSelection.filter((s) => s !== style),
+                    )
+                  }
+                />
+                {styleDefinitions[style].label}
+              </label>
+            ))}
+          </details>
           <button
             className="bake-styles"
-            disabled={!canGenerateStyles || disabled}
+            disabled={!canGenerateStyles || disabled || !styleSelection.length}
             onClick={onGenerateStyles}
           >
-            <Layers size={14} /> Bake 3 style sets
+            <Layers size={14} /> Bake {styleSelection.length} style{" "}
+            {styleSelection.length === 1 ? "set" : "sets"}
           </button>
           <small>Same camera and animation. Compare after baking.</small>
         </div>

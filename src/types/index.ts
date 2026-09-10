@@ -25,6 +25,7 @@ export interface RenderRecipe {
   paddingPercent: number;
   outlineEnabled: boolean;
   outlineWidth: number;
+  outlineColor: string;
   anchor: "center" | "ground";
   fps: number;
   atlasLayout: "grid" | "strip";

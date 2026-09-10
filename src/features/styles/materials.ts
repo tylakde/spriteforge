@@ -4,18 +4,86 @@ import {
   Material,
   Mesh,
   MeshStandardMaterial,
+  MeshPhysicalMaterial,
   MeshToonMaterial,
   NearestFilter,
   RedFormat,
 } from "three";
+import { styleDefinitions } from "./styles";
 import type { RenderRecipe } from "../../types";
 /** Only the freshly loaded bake scene is modified. Inspection/source materials stay intact. */
 export function prepareStyleMaterials(
   root: Group,
   recipe: RenderRecipe,
 ): () => void {
-  if (recipe.style !== "cartoon" && recipe.style !== "hybrid") return () => {};
-  if (recipe.style === "hybrid") {
+  const shading = styleDefinitions[recipe.style].shading;
+  if (shading === "pbr") return () => {};
+  if (shading === "clay") {
+    const originals = new Map<Mesh, Material | Material[]>();
+    const replacements = new Map<Material, Material>();
+    const convert = (material: Material) => {
+      if (replacements.has(material)) return replacements.get(material)!;
+      const clone =
+        material instanceof MeshStandardMaterial
+          ? material.clone()
+          : new MeshStandardMaterial({
+              transparent: material.transparent,
+              opacity: material.opacity,
+              side: material.side,
+              alphaTest: material.alphaTest,
+            });
+      for (const key of [
+        "alphaMap",
+        "displacementMap",
+        "displacementScale",
+        "displacementBias",
+      ])
+        if (key in material)
+          Object.assign(clone, { [key]: Reflect.get(material, key) });
+      clone.color.set("#c68f70");
+      // Keep diffuse-map alpha for foliage/cutouts while replacing only its RGB with clay.
+      clone.onBeforeCompile = (shader) => {
+        shader.fragmentShader = shader.fragmentShader.replace(
+          "#include <map_fragment>",
+          "vec3 clayRGB = diffuseColor.rgb;\n#include <map_fragment>\ndiffuseColor.rgb = clayRGB;",
+        );
+      };
+      clone.customProgramCacheKey = () => "spriteforge-clay-v1";
+      if (clone instanceof MeshPhysicalMaterial) {
+        clone.transmission = 0;
+        clone.clearcoat = 0;
+        clone.iridescence = 0;
+        clone.sheen = 0;
+      }
+
+      clone.normalMap = null;
+      clone.bumpMap = null;
+      clone.metalnessMap = null;
+      clone.roughnessMap = null;
+      clone.emissiveMap = null;
+      clone.emissive.set(0);
+      clone.vertexColors = false;
+      clone.metalness = 0;
+      clone.roughness = 1;
+      replacements.set(material, clone);
+      return clone;
+    };
+    root.traverse((object) => {
+      if (object instanceof Mesh) {
+        originals.set(object, object.material);
+        object.material = Array.isArray(object.material)
+          ? object.material.map(convert)
+          : convert(object.material);
+      }
+    });
+    return () => {
+      originals.forEach((material, mesh) => {
+        mesh.material = material;
+      });
+      replacements.forEach((material) => material.dispose());
+    };
+  }
+  if (shading === "matte") {
     root.traverse((object) => {
       if (object instanceof Mesh) {
         for (const material of Array.isArray(object.material)
@@ -79,7 +147,7 @@ export function prepareStyleMaterials(
         Object.assign(toon, { [key]: Reflect.get(material, key) });
     }
     toon.gradientMap = gradient;
-    toon.name = material.name + " (Painted Cartoon)";
+    toon.name = material.name + ` (${styleDefinitions[recipe.style].label})`;
     replacements.set(material, toon);
     return toon;
   };

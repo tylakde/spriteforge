@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Download, Columns3, X } from "lucide-react";
 import type { Generation } from "../types";
 import { styleDefinitions } from "../features/styles/styles";
@@ -15,12 +15,20 @@ export default function VariationSets({
   onSelect: (set: Generation) => void;
   onExport: () => void;
 }) {
+  const strip = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    strip.current
+      ?.querySelector("[aria-pressed=true]")
+      ?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [selected]);
+  const [overview, setOverview] = useState(sets.length > 6);
   const [comparing, setComparing] = useState(false),
     [frame, setFrame] = useState(0),
     [urls, setURLs] = useState<string[]>([]);
   useEffect(() => {
     setFrame(0);
     setComparing(false);
+    setOverview(sets.length > 6);
   }, [sets]);
   useEffect(() => {
     if (!comparing) return;
@@ -43,6 +51,7 @@ export default function VariationSets({
           STYLE SETS
         </div>
         <div
+          ref={strip}
           className="variation-options"
           role="group"
           aria-label="Choose a generated style"
@@ -69,7 +78,8 @@ export default function VariationSets({
           <Columns3 size={14} /> Compare
         </button>
         <button disabled={disabled} onClick={onExport}>
-          <Download size={14} /> Export 3 sets
+          <Download size={14} /> Export {sets.length}{" "}
+          {sets.length === 1 ? "set" : "sets"}
         </button>
       </section>
       {comparing && (
@@ -87,6 +97,11 @@ export default function VariationSets({
                 {record.animation &&
                   ` · ${record.animation} / frame ${record.animationFrame}`}
               </span>
+              {sets.length > 3 && (
+                <button onClick={() => setOverview(!overview)}>
+                  {overview ? "Large previews" : "Overview"}
+                </button>
+              )}
               <button
                 aria-label="Close style comparison"
                 onClick={() => setComparing(false)}
@@ -94,7 +109,9 @@ export default function VariationSets({
                 <X size={18} />
               </button>
             </div>
-            <div className="style-comparison-images">
+            <div
+              className={`style-comparison-images ${overview ? "overview" : ""}`}
+            >
               {sets.map((set, i) => (
                 <figure key={set.metadata.recipe.style}>
                   <img

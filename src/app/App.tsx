@@ -62,7 +62,8 @@ export default function App() {
   const recipe = useStore((s) => s.recipe),
     outputMode = useStore((s) => s.outputMode),
     preferences = useStore((s) => s.preferences),
-    update = useStore((s) => s.update);
+    update = useStore((s) => s.update),
+    styleSelection = useStore((s) => s.styleSelection);
   const source = sources.find((s) => s.id === selected) ?? null;
   useEffect(
     () => () => {
@@ -165,6 +166,7 @@ export default function App() {
           setStatus(label);
         },
         abort.current.signal,
+        styleSelection,
       );
       new Set([generationRef.current, ...variationsRef.current]).forEach(
         disposeGeneration,
@@ -174,7 +176,9 @@ export default function App() {
       generationRef.current = sets[0];
       setGeneration(sets[0]);
       useStore.getState().setRecipe(sets[0].metadata.recipe);
-      setStatus("3 style sets ready — compare and export");
+      setStatus(
+        `${sets.length} style ${sets.length === 1 ? "set" : "sets"} ready — compare and export`,
+      );
     } catch (error) {
       report((error as Error).message);
     } finally {

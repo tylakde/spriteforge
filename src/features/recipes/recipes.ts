@@ -3,6 +3,7 @@ import {
   applyStyle,
   styleDefinitions,
   variationStyles,
+  allStyles,
 } from "../styles/styles";
 export const baseRecipe: RenderRecipe = {
   name: "Environment Prop",
@@ -29,6 +30,7 @@ export const baseRecipe: RenderRecipe = {
   paddingPercent: 10,
   outlineEnabled: false,
   outlineWidth: 1,
+  outlineColor: "#121212",
   anchor: "ground",
   fps: 12,
   atlasLayout: "grid",
@@ -98,7 +100,7 @@ export function validateRecipe(input: unknown): RenderRecipe {
     )
       throw new Error(`${key} must be between ${min} and ${max}.`);
   for (const [key, values] of Object.entries({
-    style: ["original", "pixel", "cartoon", "hybrid"],
+    style: allStyles,
     pixelScale: [1, 2, 4, 8],
     cellSize: [64, 128, 256, 512, 1024],
     directionCount: [1, 4, 8, 16, 32],
@@ -126,5 +128,10 @@ export function validateRecipe(input: unknown): RenderRecipe {
     !/^#[0-9a-f]{6}$/i.test(r.backgroundColor)
   )
     throw new Error("Background colour must be #RRGGBB.");
+  if (
+    typeof r.outlineColor !== "string" ||
+    !/^#[0-9a-f]{6}$/i.test(r.outlineColor)
+  )
+    throw new Error("Outline colour must be #RRGGBB.");
   return r as unknown as RenderRecipe;
 }

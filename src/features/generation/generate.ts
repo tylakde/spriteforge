@@ -16,12 +16,13 @@ import { buildAtlas, canvasBlob, makeMetadata } from "../atlas/atlas";
 import { sampleTimes, yieldToUI } from "../../lib/math";
 import { validateRecipe } from "../recipes/recipes";
 import type { AssetSource, Generation, RenderRecipe } from "../../types";
-import { effectivePixelScale, gradePixels } from "../styles/styles";
+import { effectivePixelScale, gradePixels, hexRGB } from "../styles/styles";
 import { prepareStyleMaterials } from "../styles/materials";
 export function outlinePixels(
   pixels: Uint8ClampedArray,
   size: number,
   width: number,
+  colour: readonly number[] = [18, 18, 18],
 ) {
   const alpha = new Uint8Array(size * size);
   for (let i = 0; i < alpha.length; i++) alpha[i] = pixels[i * 4 + 3];
@@ -43,7 +44,7 @@ export function outlinePixels(
         out = a + b;
       if (!out) continue;
       for (let c = 0; c < 3; c++)
-        pixels[i * 4 + c] = (pixels[i * 4 + c] * a + 18 * b) / out;
+        pixels[i * 4 + c] = (pixels[i * 4 + c] * a + colour[c] * b) / out;
       pixels[i * 4 + 3] = Math.round(out * 255);
     }
 }
@@ -179,6 +180,7 @@ export async function renderSequence(
           pixels,
           size,
           Math.ceil(recipe.outlineWidth / pixelScale),
+          hexRGB(recipe.outlineColor),
         );
       ctx.clearRect(0, 0, size, size);
       ctx.putImageData(new ImageData(pixels, size, size), 0, 0);
