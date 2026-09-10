@@ -52,3 +52,11 @@ V1 intentionally has a single RGBA pass, one selected animation per bake, no aut
 ## Additional packaging status
 
 The Windows installer job is still compiling in CI run 34413511176 at handoff. Its completion can be checked on the Actions page. The core desktop build requirement is verified by the successful current Linux package and its actual native workflow.
+
+## Style variations — 10 September 2026
+
+- 13 unit tests passed, including legacy recipe defaults, invalid style parameters, deterministic quantisation, alpha preservation, toon-material ownership/restoration, style naming and export filtering.
+- All seven Playwright workflows passed. New tests bake and export three distinct static/animated sets, confirm 4× pixel blocks, equal pivots, independent atlas names, persistent recipes, and byte-identical individual re-bakes. A targeted rerun also passed full-size comparison and next-view navigation after the comparison modal was added.
+- Production build and desktop-CSP browser smoke passed. Generated comparison screenshots and all three example export sets are checked in under `docs/`.
+- UE5.8 Editor build passed. Three generated style atlases were imported into separate data assets; actual Unreal texture properties are nearest for Pixel Fantasy / Pixel Realism and bilinear for Painted Cartoon. `tests/unreal/verify_styles.py` also verified matching pivots and persisted recipe styles, logging `SPRITEFORGE_STYLES_OK` and returning 0.
+- These are local rendering treatments; they do not generate new model geometry or repaint source texture artwork.
