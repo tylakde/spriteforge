@@ -72,7 +72,7 @@ atlasUV = localQuadUV * UVScale.xy + UVOffset.xy
 
 The actor applies a half-texel inset to reduce neighbouring-cell sampling. PNG UV origin is top-left, and the procedural quad explicitly maps its top-left vertex to UV (0,0).
 
-Textures use sRGB, uncompressed icon-style RGBA, clamp addressing, bilinear filtering, no mipmaps and no streaming. These are predictable V1 settings; they preserve alpha and avoid cross-cell mip bleed. Masked rendering is suitable for many opaque-cutout impostors but clips soft transparency. Hair, smoke and glass may need a translucent material with the same parameters. For large-scale use, add extruded gutters and carefully generated atlas mipmaps, compression and streaming policies.
+Textures use sRGB, uncompressed icon-style RGBA, clamp addressing, no mipmaps and no streaming. Filtering is bilinear for smooth styles and nearest-neighbour for pixelated styles. These are predictable V1 settings; they preserve alpha and avoid cross-cell mip bleed. Masked rendering is suitable for many opaque-cutout impostors but clips soft transparency. Hair, smoke and glass may need a translucent material with the same parameters. For large-scale use, add extruded gutters and carefully generated atlas mipmaps, compression and streaming policies.
 
 Extend the shared material with NormalAtlas, DepthAtlas, EmissiveAtlas or MaskAtlas parameters when the corresponding baker passes exist. V1 exports RGBA only.
 
@@ -107,3 +107,11 @@ To run the actor integration checks after importing both bundled examples, enabl
 This creates and destroys test actors in the current Editor world, checks the generated material graph, verifies four camera quadrants and a rotated actor heading, and tests animated frame lookup and loop timing. It does not save or modify your level.
 
 On Windows, `scripts/verify-unreal.ps1 -Project C:\path\Project.uproject` runs both included imports and the actor tests together. Use a test project with SpriteForge Importer and Python Editor Script Plugin enabled; it saves the example assets under `/Game/SpriteForge`.
+
+## Sprite style variants
+
+SpriteForge now exports Pixel Fantasy, Painted Cartoon and Pixel Realism sets. Each has its own asset name and atlas, allowing all three to coexist under `/Game/SpriteForge`. Import each style's JSON from the multi-set export folder. Existing schema v1 exports remain supported.
+
+Optional `appearance` metadata records a rendering version, style, pixel scale and texture filter. The updated importer applies **nearest-neighbour** filtering to Pixel Fantasy / Pixel Realism exports with pixel blocks larger than one, preserving crisp pixels. Painted Cartoon and Original PBR use bilinear filtering. The complete editable settings and shared comparison framing margin remain in the recipe snapshot.
+
+After importing the three `docs/examples/styles` exports, `tests/unreal/verify_styles.py` checks separate data assets, frame counts, saved recipes, matching pivots and actual texture filtering in Unreal. Run it through the same Python commandlet used for the runtime tests.

@@ -27,6 +27,23 @@ test("bake, compare, export and reproduce three distinct style sets", async ({
   );
   await expect(page.locator(".stale")).toHaveCount(0);
   await page.screenshot({ path: "test-results/style-workspace.png" });
+  await page.getByRole("button", { name: "Compare", exact: true }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Compare sprite styles" }),
+  ).toBeVisible();
+  await expect(page.getByRole("dialog").locator("img")).toHaveCount(3);
+  await page
+    .getByRole("dialog")
+    .locator("img")
+    .first()
+    .evaluate(async (image: HTMLImageElement) => {
+      await image.decode();
+    });
+  await page.screenshot({ path: "test-results/style-comparison.png" });
+  await page.getByRole("button", { name: "Next view" }).click();
+  await expect(page.getByRole("dialog")).toContainText("45°");
+  await page.getByRole("button", { name: "Close style comparison" }).click();
+
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export 3 sets" }).click();
   const files = unzipSync(readFileSync((await (await download).path())!));

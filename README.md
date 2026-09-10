@@ -50,6 +50,27 @@ Runestone/
     ...
 ```
 
+## Art styles and variation sets
+
+Choose **Art style** in the recipe panel, or select one of the new built-in presets:
+
+| Style | Treatment |
+| --- | --- |
+| Pixel Fantasy | Coarse 4× pixel blocks, reduced colour steps, subtle fixed dithering and crisp alpha silhouettes. |
+| Painted Cartoon | Warcraft-inspired matte toon lighting, configurable shading bands, richer colour and a smooth outline. |
+| Pixel Realism | Finer 2× pixels, restrained colour grading and retained textured lighting detail. |
+| Original PBR | The original material rendering. Legacy recipes load in this mode. |
+
+**Tune appearance** exposes pixel block size, colour steps, saturation, contrast, dithering and (for cartoon) shading bands. Cell size still controls the exported PNG dimensions. Stylisation changes rendering; it preserves the source geometry and texture artwork. The inspection viewport shows the original asset; generated views show the baked style.
+
+**Bake 3 style sets** generates the three default looks sequentially using your current camera, output dimensions, directions and animation settings. It reserves identical framing across the sets. Use the style tabs to select a set, **Compare** for a large side-by-side view, and **Export 3 sets** for a single ZIP or native folder containing all styles. Tune an individual style and use **Generate** to customise it; ordinary batch processing uses the selected recipe's style.
+
+Exports use distinct asset names such as `Runestone_Pixel_Fantasy`, `Runestone_Painted_Cartoon` and `Runestone_Pixel_Realism`, so Unreal imports coexist. Appearance/filter settings and the shared framing margin are saved in recipes and metadata. Re-generating a selected variation reproduces its original framing.
+
+![Style comparison](docs/style-comparison.png)
+
+Ready-to-import example sets are in `docs/examples/styles/`. The updated Unreal importer applies nearest-neighbour filtering to pixelated styles and bilinear filtering to smooth styles.
+
 ## Development and checks
 
 ```sh

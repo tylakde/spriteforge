@@ -9,3 +9,6 @@
 - Pixel readback flips the WebGL origin and converts associated-alpha RGB to straight-alpha PNG. The MSAA render target is rebound before every frame because asynchronous readback restores the resolved framebuffer.
 - Atlas allocation caps at 8192px per side / 32 megapixels before rendering, with 4096 samples per animation. This bounds GPU/CPU memory and reports actionable errors.
 - Unreal Engine 5.8.1 and MSVC 14.44 were discovered on the Windows host mounted into WSL. The plugin is compiled against that installation and verified in a separate temporary project.
+
+- Style changes are deterministic local rendering operations, independent of asset purpose presets. Pixel styles render to a lower-resolution WebGL target and upscale with nearest-neighbour sampling; colour quantisation/dithering use fixed parameters across all directions and animation frames. Cartoon style uses a nearest-filtered toon lighting ramp while preserving texture, alpha and emissive maps. Hybrid retains softened PBR lighting.
+- Three-style sets share a recorded `framingOutlineWidth` margin, keeping output pivots and camera scale identical and allowing individual recipe re-bakes to reproduce the result. Style suffixes identify distinct UE assets; schema v1's optional appearance metadata controls nearest/bilinear import filtering without invalidating old exports.
