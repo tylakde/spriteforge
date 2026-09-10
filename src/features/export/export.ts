@@ -35,10 +35,9 @@ export async function chooseOutputDirectory() {
       })
     : null;
 }
-export async function exportGeneration(
+export async function generationFiles(
   generation: Generation,
   mode: ExportMode,
-  directory?: string | null,
 ) {
   const files: Record<string, Uint8Array> = {};
   const { metadata } = generation;
@@ -55,13 +54,21 @@ export async function exportGeneration(
       files[`frames/${metadata.frames[i].file}`] = new Uint8Array(
         await generation.frames[i].arrayBuffer(),
       );
+  return files;
+}
+async function writeExport(
+  files: Record<string, Uint8Array>,
+  assetName: string,
+  zipName: string,
+  directory?: string | null,
+) {
   if (isTauri()) {
     const output = directory ?? (await chooseOutputDirectory());
     if (!output) return null;
     // Rust creates a fresh directory atomically and only writes safe relative filenames into it.
     return await invoke<string>("export_files", {
       directory: output,
-      name: metadata.asset,
+      name: assetName,
       files: Object.entries(files).map(([path, data]) => ({
         path,
         data: Array.from(data),
@@ -73,9 +80,35 @@ export async function exportGeneration(
       error ? reject(error) : resolve(result),
     ),
   );
-  const name = `${metadata.asset}_${mode}.zip`;
+  const name = zipName;
   download(new Blob([new Uint8Array(data)], { type: "application/zip" }), name);
   return name;
+}
+export async function exportGeneration(
+  generation: Generation,
+  mode: ExportMode,
+  directory?: string | null,
+) {
+  return writeExport(
+    await generationFiles(generation, mode),
+    generation.metadata.asset,
+    `${generation.metadata.asset}_${mode}.zip`,
+    directory,
+  );
+}
+export async function exportVariationSets(
+  generations: Generation[],
+  mode: ExportMode,
+) {
+  if (!generations.length) throw new Error("Generate style sets first.");
+  const files: Record<string, Uint8Array> = {};
+  for (const generation of generations) {
+    const content = await generationFiles(generation, mode);
+    for (const [path, data] of Object.entries(content))
+      files[`${generation.metadata.asset}/${path}`] = data;
+  }
+  const stem = safeName(generations[0].metadata.source) + "_styles";
+  return writeExport(files, stem, `${stem}_${mode}.zip`);
 }
 export async function importNativeFiles(): Promise<File[]> {
   const selected = await open({

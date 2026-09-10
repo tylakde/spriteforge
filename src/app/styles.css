@@ -1042,3 +1042,82 @@ progress {
     padding-bottom: 8px;
   }
 }
+.style-section {
+  padding: 13px 15px;
+  border-bottom: 1px solid var(--border);
+}
+.style-section > select {
+  display: block;
+  width: 100%;
+  margin-top: 7px;
+  padding: 8px;
+  color: #dfedca;
+}
+.style-section p {
+  font-size: 10px;
+  line-height: 1.5;
+  color: #9ba9b9;
+  margin: 8px 0;
+}
+.style-section > small {
+  display: block;
+  font-size: 9px;
+  color: #7f8b9c;
+  margin-top: 7px;
+  line-height: 1.5;
+}
+.style-section .bake-styles {
+  width: 100%;
+  background: #2a3327;
+  color: #c4ed89;
+  border-color: #46563a;
+  margin-top: 7px;
+}
+.recipe-panel .style-tuning {
+  padding: 0;
+  border: 0;
+}
+.recipe-panel .style-tuning summary {
+  padding: 7px 0;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.variation-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 18px;
+  background: #20242a;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.variation-options {
+  display: flex;
+  gap: 9px;
+  flex: 1;
+}
+.variation-options button {
+  flex: 1;
+  justify-content: flex-start;
+  background: #252a32;
+  gap: 10px;
+  text-align: left;
+  font-size: 11px;
+}
+.variation-options button[aria-pressed="true"] {
+  border-color: #9abb6d;
+  background: #303b2a;
+  color: #d7efb8;
+}
+.variation-options img {
+  width: 42px;
+  height: 42px;
+  image-rendering: pixelated;
+  border-radius: 3px;
+}
+.variation-options small {
+  display: block;
+  font-size: 9px;
+  margin-top: 5px;
+  color: #8997a7;
+}

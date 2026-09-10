@@ -28,11 +28,14 @@ import {
 import {
   chooseOutputDirectory,
   exportGeneration,
+  exportVariationSets,
   importNativeFiles,
 } from "../features/export/export";
 import { runBatch, type QueueItem } from "../features/batch/batch";
 import { useStore } from "../stores/useStore";
 import type { AssetSource, Generation, LoadedAsset } from "../types";
+import { renderVariationSets } from "../features/styles/variations";
+import VariationSets from "../components/VariationSets";
 export default function App() {
   const [sources, setSources] = useState<AssetSource[]>([]),
     [selected, setSelected] = useState<string | null>(null),
@@ -43,6 +46,7 @@ export default function App() {
     [playing, setPlaying] = useState(false),
     [time, setTime] = useState(0),
     [generation, setGeneration] = useState<Generation | null>(null),
+    [variations, setVariations] = useState<Generation[]>([]),
     [busy, setBusy] = useState(false),
     [progress, setProgress] = useState(0),
     [status, setStatus] = useState("Ready"),
@@ -53,7 +57,8 @@ export default function App() {
   const filesInput = useRef<HTMLInputElement>(null),
     folderInput = useRef<HTMLInputElement>(null),
     abort = useRef<AbortController | null>(null),
-    generationRef = useRef<Generation | null>(null);
+    generationRef = useRef<Generation | null>(null),
+    variationsRef = useRef<Generation[]>([]);
   const recipe = useStore((s) => s.recipe),
     outputMode = useStore((s) => s.outputMode),
     preferences = useStore((s) => s.preferences),
@@ -62,7 +67,9 @@ export default function App() {
   useEffect(
     () => () => {
       abort.current?.abort();
-      disposeGeneration(generationRef.current);
+      new Set([generationRef.current, ...variationsRef.current]).forEach(
+        disposeGeneration,
+      );
     },
     [],
   );
@@ -129,11 +136,66 @@ export default function App() {
         },
         abort.current.signal,
       );
-      disposeGeneration(generationRef.current);
+      new Set([generationRef.current, ...variationsRef.current]).forEach(
+        disposeGeneration,
+      );
+      variationsRef.current = [];
+      setVariations([]);
       generationRef.current = next;
       setGeneration(next);
     } catch (e) {
       report((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const generateStyles = async () => {
+    if (!source || busy) return;
+    setBusy(true);
+    setError("");
+    setPlaying(false);
+    abort.current = new AbortController();
+    try {
+      const sets = await renderVariationSets(
+        source,
+        recipe,
+        clipIndex,
+        (value, label) => {
+          setProgress(value);
+          setStatus(label);
+        },
+        abort.current.signal,
+      );
+      new Set([generationRef.current, ...variationsRef.current]).forEach(
+        disposeGeneration,
+      );
+      variationsRef.current = sets;
+      setVariations(sets);
+      generationRef.current = sets[0];
+      setGeneration(sets[0]);
+      useStore.getState().setRecipe(sets[0].metadata.recipe);
+      setStatus("3 style sets ready — compare and export");
+    } catch (error) {
+      report((error as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const selectVariation = (set: Generation) => {
+    if (busy) return;
+    generationRef.current = set;
+    setGeneration(set);
+    useStore.getState().setRecipe(set.metadata.recipe);
+  };
+  const exportStyles = async () => {
+    if (busy || !variations.length) return;
+    setBusy(true);
+    setError("");
+    try {
+      const path = await exportVariationSets(variations, outputMode);
+      setStatus(path ? `Exported to ${path}` : "Export cancelled");
+    } catch (error) {
+      report((error as Error).message);
     } finally {
       setBusy(false);
     }
@@ -503,8 +565,22 @@ export default function App() {
             </div>
           )}
         </section>
-        <RecipePanel disabled={busy} onError={report} />
+        <RecipePanel
+          disabled={busy}
+          canGenerateStyles={!!source && !!stats}
+          onGenerateStyles={() => void generateStyles()}
+          onError={report}
+        />
       </main>
+      {variations.length > 0 && (
+        <VariationSets
+          sets={variations}
+          selected={generation}
+          disabled={busy}
+          onSelect={selectVariation}
+          onExport={() => void exportStyles()}
+        />
+      )}
       <GeneratedViews generation={generation} stale={stale} />
       {queue.length > 0 && (
         <section className="batch-queue">

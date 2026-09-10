@@ -1,5 +1,14 @@
 import type { AnimationClip, Box3, Group } from "three";
+import type { SpriteStyle } from "../features/styles/styles";
 export interface RenderRecipe {
+  style: SpriteStyle;
+  pixelScale: 1 | 2 | 4 | 8;
+  colorSteps: number;
+  saturation: number;
+  contrast: number;
+  dither: number;
+  toonBands: number;
+  framingOutlineWidth: number;
   name: string;
   cellSize: 64 | 128 | 256 | 512 | 1024;
   projection: "orthographic" | "perspective";
@@ -74,6 +83,12 @@ export interface Metadata {
     { fps: number; frameCount: number; duration: number }
   >;
   background: "transparent" | "solid";
+  appearance: {
+    version: 1;
+    style: SpriteStyle;
+    textureFilter: "nearest" | "linear";
+    pixelScale: number;
+  };
   recipe: RenderRecipe;
   frames: FrameRecord[];
 }

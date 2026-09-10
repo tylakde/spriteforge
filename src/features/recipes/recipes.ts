@@ -1,6 +1,19 @@
 import type { RenderRecipe } from "../../types";
+import {
+  applyStyle,
+  styleDefinitions,
+  variationStyles,
+} from "../styles/styles";
 export const baseRecipe: RenderRecipe = {
   name: "Environment Prop",
+  style: "original",
+  pixelScale: 1,
+  colorSteps: 64,
+  saturation: 1,
+  contrast: 1,
+  dither: 0,
+  toonBands: 4,
+  framingOutlineWidth: 0,
   cellSize: 256,
   projection: "orthographic",
   perspectiveFov: 35,
@@ -44,7 +57,18 @@ export const builtins: RenderRecipe[] = [
     anchor: "center",
   },
 ];
+export const stylePresets = variationStyles.map((style) => ({
+  ...applyStyle(baseRecipe, style),
+  name: styleDefinitions[style].label,
+}));
+builtins.push(...stylePresets);
 const ranges: Partial<Record<keyof RenderRecipe, [number, number]>> = {
+  colorSteps: [2, 64],
+  saturation: [0, 2],
+  contrast: [0.5, 1.75],
+  dither: [0, 1],
+  toonBands: [2, 8],
+  framingOutlineWidth: [0, 8],
   perspectiveFov: [10, 100],
   cameraElevation: [-10, 89],
   frontDirection: [0, 360],
@@ -74,6 +98,8 @@ export function validateRecipe(input: unknown): RenderRecipe {
     )
       throw new Error(`${key} must be between ${min} and ${max}.`);
   for (const [key, values] of Object.entries({
+    style: ["original", "pixel", "cartoon", "hybrid"],
+    pixelScale: [1, 2, 4, 8],
     cellSize: [64, 128, 256, 512, 1024],
     directionCount: [1, 4, 8, 16, 32],
     projection: ["orthographic", "perspective"],
@@ -83,7 +109,14 @@ export function validateRecipe(input: unknown): RenderRecipe {
   }))
     if (!(values as unknown[]).includes(r[key]))
       throw new Error(`Invalid ${key}.`);
-  for (const key of ["fps", "outlineWidth", "atlasPadding"])
+  for (const key of [
+    "fps",
+    "outlineWidth",
+    "atlasPadding",
+    "colorSteps",
+    "toonBands",
+    "framingOutlineWidth",
+  ])
     if (!Number.isInteger(r[key]))
       throw new Error(`${key} must be a whole number.`);
   for (const key of ["outlineEnabled", "powerOfTwo"])

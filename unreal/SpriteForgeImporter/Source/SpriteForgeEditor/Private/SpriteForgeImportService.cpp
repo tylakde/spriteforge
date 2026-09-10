@@ -73,7 +73,7 @@ USpriteForgeAsset* SpriteForgeImportService::Import(const FString& MetadataPath,
     FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools")).Get().ImportAssetTasks({Task});
     UTexture2D* Texture=nullptr;for(UObject* Object:Task->GetObjects())if((Texture=Cast<UTexture2D>(Object)))break;
     if(!Texture){Error=TEXT("Unreal could not import the atlas texture.");return nullptr;}
-    Texture->SRGB=true;Texture->CompressionSettings=TC_EditorIcon;Texture->MipGenSettings=TMGS_NoMipmaps;Texture->AddressX=TA_Clamp;Texture->AddressY=TA_Clamp;Texture->Filter=TF_Bilinear;Texture->LODGroup=TEXTUREGROUP_Pixels2D;Texture->NeverStream=true;Texture->PostEditChange();
+    Texture->SRGB=true;Texture->CompressionSettings=TC_EditorIcon;Texture->MipGenSettings=TMGS_NoMipmaps;Texture->AddressX=TA_Clamp;Texture->AddressY=TA_Clamp;Texture->Filter=Doc.bPixelated?TF_Nearest:TF_Bilinear;Texture->LODGroup=TEXTUREGROUP_Pixels2D;Texture->NeverStream=true;Texture->PostEditChange();
     if(!SaveAsset(Texture,Error))return nullptr;
     UMaterial* Material=MakeMaterial(Texture,Error);if(!Material)return nullptr;
     UMaterialInstanceConstant* Instance=AssetAt<UMaterialInstanceConstant>(Folder,TEXT("MI_")+Doc.Asset+TEXT("_Impostor"),Error);if(!Instance)return nullptr;

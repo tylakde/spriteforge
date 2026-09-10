@@ -5,6 +5,7 @@ import {
   frameName,
   safeName,
 } from "../../lib/math";
+import { styledAssetName, effectivePixelScale } from "../styles/styles";
 export function makeMetadata(
   source: string,
   recipe: RenderRecipe,
@@ -24,7 +25,7 @@ export function makeMetadata(
     recipe.atlasLayout,
     recipe.powerOfTwo,
   );
-  const asset = safeName(source);
+  const asset = styledAssetName(safeName(source), recipe.style);
   return {
     version: 1,
     asset,
@@ -49,6 +50,12 @@ export function makeMetadata(
       y: recipe.anchor === "center" ? 0.5 : pivotY,
     },
     background: recipe.background,
+    appearance: {
+      version: 1,
+      style: recipe.style,
+      textureFilter: effectivePixelScale(recipe) > 1 ? "nearest" : "linear",
+      pixelScale: effectivePixelScale(recipe),
+    },
     recipe: { ...recipe },
     animations: animation
       ? {
@@ -65,7 +72,7 @@ export function makeMetadata(
         const rect = layout.rects[index];
         return {
           index,
-          file: frameName(source, angle, animation, frame),
+          file: frameName(asset, angle, animation, frame),
           directionDegrees: angle,
           animation,
           animationFrame: frame,

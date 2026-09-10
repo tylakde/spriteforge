@@ -16,6 +16,8 @@ import { buildAtlas, canvasBlob, makeMetadata } from "../atlas/atlas";
 import { sampleTimes, yieldToUI } from "../../lib/math";
 import { validateRecipe } from "../recipes/recipes";
 import type { AssetSource, Generation, RenderRecipe } from "../../types";
+import { effectivePixelScale, gradePixels } from "../styles/styles";
+import { prepareStyleMaterials } from "../styles/materials";
 export function outlinePixels(
   pixels: Uint8ClampedArray,
   size: number,
@@ -63,6 +65,7 @@ export async function renderSequence(
     target: WebGLRenderTarget | undefined,
     mixer: AnimationMixer | undefined;
   const thumbnails: string[] = [];
+  let restoreMaterials = () => {};
   try {
     const clip = clipIndex === null ? undefined : asset.animations[clipIndex];
     if (clipIndex !== null && !clip)
@@ -104,6 +107,9 @@ export async function renderSequence(
       (1 - groundInClip.y) / 2,
       clip?.duration || 0,
     );
+    restoreMaterials = prepareStyleMaterials(asset.root, recipe);
+    const pixelScale = effectivePixelScale(recipe);
+    const renderSize = recipe.cellSize / pixelScale;
     const scene = new Scene();
     scene.add(asset.root, lighting(recipe));
     // Render transparent first, then composite backgrounds after optional silhouette processing.
@@ -114,22 +120,26 @@ export async function renderSequence(
       preserveDrawingBuffer: false,
     });
     renderer.setPixelRatio(1);
-    renderer.setSize(recipe.cellSize, recipe.cellSize, false);
+    renderer.setSize(renderSize, renderSize, false);
     renderer.outputColorSpace = SRGBColorSpace;
     renderer.toneMapping = ACESFilmicToneMapping;
     renderer.setClearColor(new Color(0), 0);
-    target = new WebGLRenderTarget(recipe.cellSize, recipe.cellSize, {
+    target = new WebGLRenderTarget(renderSize, renderSize, {
       samples: 4,
     });
     target.texture.colorSpace = SRGBColorSpace;
     renderer.setRenderTarget(target);
-    const size = recipe.cellSize,
+    const size = renderSize,
       readback = new Uint8Array(size * size * 4),
       pixels = new Uint8ClampedArray(size * size * 4);
     const canvas = document.createElement("canvas");
     canvas.width = canvas.height = size;
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas unavailable.");
+    const output = document.createElement("canvas");
+    output.width = output.height = recipe.cellSize;
+    const outputCtx = output.getContext("2d")!;
+    outputCtx.imageSmoothingEnabled = false;
     const thumb = document.createElement("canvas");
     thumb.width = thumb.height = 96;
     const thumbCtx = thumb.getContext("2d")!;
@@ -163,8 +173,13 @@ export async function renderSequence(
               ? Math.min(255, Math.round((readback[src + c] * 255) / a))
               : 0;
         }
+      gradePixels(pixels, size, recipe);
       if (recipe.outlineEnabled)
-        outlinePixels(pixels, size, recipe.outlineWidth);
+        outlinePixels(
+          pixels,
+          size,
+          Math.ceil(recipe.outlineWidth / pixelScale),
+        );
       ctx.clearRect(0, 0, size, size);
       ctx.putImageData(new ImageData(pixels, size, size), 0, 0);
       if (recipe.background === "solid") {
@@ -173,9 +188,12 @@ export async function renderSequence(
         ctx.fillRect(0, 0, size, size);
         ctx.globalCompositeOperation = "source-over";
       }
-      frames.push(await canvasBlob(canvas));
+      outputCtx.clearRect(0, 0, recipe.cellSize, recipe.cellSize);
+      outputCtx.drawImage(canvas, 0, 0, recipe.cellSize, recipe.cellSize);
+      frames.push(await canvasBlob(output));
       thumbCtx.clearRect(0, 0, 96, 96);
-      thumbCtx.drawImage(canvas, 0, 0, 96, 96);
+      thumbCtx.imageSmoothingEnabled = pixelScale === 1;
+      thumbCtx.drawImage(output, 0, 0, 96, 96);
       thumbnails.push(URL.createObjectURL(await canvasBlob(thumb)));
       onProgress(
         0.1 + (0.8 * (frame.index + 1)) / metadata.frames.length,
@@ -186,7 +204,13 @@ export async function renderSequence(
     check();
     onProgress(0.93, "Packing atlas");
     const atlas = await buildAtlas(frames, metadata);
-    canvas.width = canvas.height = thumb.width = thumb.height = 1;
+    canvas.width =
+      canvas.height =
+      output.width =
+      output.height =
+      thumb.width =
+      thumb.height =
+        1;
     onProgress(1, "Ready to export");
     return {
       sourceId: source.id,
@@ -205,6 +229,7 @@ export async function renderSequence(
     target?.dispose();
     renderer?.dispose();
     renderer?.forceContextLoss();
+    restoreMaterials();
     asset.dispose();
   }
 }

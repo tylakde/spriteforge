@@ -28,6 +28,11 @@ bool SpriteForgeMetadata::Parse(const FString& JSON,FSpriteForgeDocument& Out,FS
     const TArray<TSharedPtr<FJsonValue>>* Directions=nullptr;int32 DirectionCount;
     if(!Integer(Root,TEXT("directionCount"),DirectionCount,1,32)||!Root->TryGetArrayField(TEXT("directions"),Directions)||Directions->Num()!=DirectionCount||!(DirectionCount==1||DirectionCount==4||DirectionCount==8||DirectionCount==16||DirectionCount==32))return Fail(TEXT("Invalid direction count."));
     for(const auto& Value:*Directions){double Angle;if(!Value->TryGetNumber(Angle)||!FMath::IsFinite(Angle)||Angle<0||Angle>=360)return Fail(TEXT("Invalid direction angle."));for(float Existing:Out.Directions)if(FMath::Abs(FMath::FindDeltaAngleDegrees(Existing,Angle))<0.001)return Fail(TEXT("Duplicate directions."));Out.Directions.Add(Angle);}
+    if(Root->HasField(TEXT("appearance"))){
+        const Object Appearance=Child(Root,TEXT("appearance"));FString Filter;int32 AppearanceVersion,PixelScale;
+        if(!Appearance.IsValid()||!Integer(Appearance,TEXT("version"),AppearanceVersion,1,1)||!Integer(Appearance,TEXT("pixelScale"),PixelScale,1,8)||!Appearance->TryGetStringField(TEXT("textureFilter"),Filter)||(Filter!=TEXT("nearest")&&Filter!=TEXT("linear")))return Fail(TEXT("Invalid appearance/filter metadata."));
+        Out.bPixelated=Filter==TEXT("nearest");
+    }
     const Object Animations=Child(Root,TEXT("animations"));if(!Animations.IsValid())return Fail(TEXT("Missing animation dictionary."));
     for(const auto& Pair:Animations->Values){const Object* A=nullptr;double FPS,Duration;FSpriteForgeAnimation Clip;
         if(Pair.Key.IsEmpty()||!Pair.Value->TryGetObject(A)||!Number(*A,TEXT("fps"),FPS,1,60)||!Number(*A,TEXT("duration"),Duration,0.00001,4096)||!Integer(*A,TEXT("frameCount"),Clip.FrameCount,1,4096))return Fail(TEXT("Invalid animation definition."));

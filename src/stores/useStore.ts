@@ -4,6 +4,7 @@ import {
   baseRecipe,
   builtins,
   validateRecipe,
+  stylePresets,
 } from "../features/recipes/recipes";
 import type { RenderRecipe } from "../types";
 interface State {
@@ -76,7 +77,14 @@ export const useStore = create<State>()(
           return {
             ...current,
             recipe: validateRecipe(s.recipe),
-            presets: s.presets.map(validateRecipe),
+            presets: [
+              ...s.presets.map(validateRecipe),
+              ...(!("style" in s.recipe)
+                ? stylePresets.filter(
+                    (p) => !s.presets.some((saved) => saved.name === p.name),
+                  )
+                : []),
+            ],
             grid: typeof s.grid === "boolean" ? s.grid : true,
             previewBackground:
               s.previewBackground === "solid" ? "solid" : "checker",

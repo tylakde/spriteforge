@@ -7,6 +7,7 @@ struct FSpriteForgeDocument {
     FVector2D Pivot;
     float FrontDirection=0;
     bool bTransparent=true;
+    bool bPixelated=false;
     TArray<float> Directions;
     TArray<FSpriteForgeFrame> Frames;
     TMap<FName,FSpriteForgeAnimation> Animations;

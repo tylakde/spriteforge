@@ -6,6 +6,7 @@ import {
   Vector3,
 } from "three";
 import type { RenderRecipe } from "../../types";
+import { effectiveOutlineWidth } from "../styles/styles";
 export function calculateFraming(bounds: Box3, recipe: RenderRecipe) {
   const center = bounds.getCenter(new Vector3());
   const radius = Math.max(
@@ -20,7 +21,8 @@ export function calculateFraming(bounds: Box3, recipe: RenderRecipe) {
     2 * radius * Math.abs(Math.sin(elevation));
   const padding =
     recipe.paddingPercent / 100 +
-    (recipe.outlineEnabled ? recipe.outlineWidth / recipe.cellSize : 0);
+    Math.max(effectiveOutlineWidth(recipe), recipe.framingOutlineWidth) /
+      recipe.cellSize;
   const usable = 1 - 2 * padding;
   let span = Math.max(2 * radius, vertical, 0.001) / usable;
   let targetY = center.y * Math.cos(elevation);

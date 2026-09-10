@@ -36,3 +36,7 @@ Latest source (293b8ef) passed all web checks, release Rust tests and Linux .deb
 The current Linux package launched in a temporary mount namespace with the missing WebKit/GLES runtime supplied locally. Actual native UI checks passed: textured Runestone preview, eight-direction generation, native folder dialog, and filesystem export of eight PNGs, atlas PNG and JSON. Export contents were inspected and opposite direction PNGs differ. Screenshot: `docs/native-workspace.png`; copied output: `artifacts/native-export/Runestone/`. The isolated test window was closed afterwards; the browser dev server remains available at http://127.0.0.1:1420. Normal native launch still requires the documented OS runtime installation.
 
 Core implementation and validation are complete. The additional Windows installer job in CI run 34413511176 is still compiling; Linux installer, native workflow, Unreal plugin builds/import/reimport/runtime checks, and all web checks have passed.
+
+## Style variations — 10 September 2026
+
+Implemented Original PBR plus Pixel Fantasy, Painted Cartoon and Pixel Realism styles. Added tuneable pixel blocks, colour steps, saturation, contrast, fixed dithering and toon bands. Three-style bakes share framing and sampling, with comparison tabs and one export containing separate named asset folders. Legacy recipes upgrade to original rendering. Unreal reads filtering metadata for pixel atlases. Initial 13 unit tests and production build pass; browser and Unreal integration verification underway.

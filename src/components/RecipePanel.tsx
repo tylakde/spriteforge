@@ -8,16 +8,26 @@ import {
   RotateCcw,
   ChevronDown,
   Pencil,
+  Layers,
 } from "lucide-react";
 import { useStore } from "../stores/useStore";
 import { validateRecipe } from "../features/recipes/recipes";
 import { exportRecipe } from "../features/export/export";
 import type { RenderRecipe } from "../types";
+import {
+  applyStyle,
+  styleDefinitions,
+  type SpriteStyle,
+} from "../features/styles/styles";
 export default function RecipePanel({
   disabled,
+  canGenerateStyles,
+  onGenerateStyles,
   onError,
 }: {
   disabled: boolean;
+  canGenerateStyles: boolean;
+  onGenerateStyles: () => void;
   onError: (message: string) => void;
 }) {
   const {
@@ -197,6 +207,51 @@ export default function RecipePanel({
               e.target.value = "";
             }}
           />
+        </div>
+        <div className="style-section">
+          <label className="overline" htmlFor="sprite-style">
+            ART STYLE
+          </label>
+          <select
+            id="sprite-style"
+            aria-label="Art style"
+            value={r.style}
+            onChange={(e) =>
+              setRecipe({
+                ...applyStyle(r, e.target.value as SpriteStyle),
+                framingOutlineWidth: 0,
+              })
+            }
+          >
+            {Object.entries(styleDefinitions).map(([value, style]) => (
+              <option key={value} value={value}>
+                {style.label}
+              </option>
+            ))}
+          </select>
+          <p>{styleDefinitions[r.style].description}</p>
+          {r.style !== "original" && (
+            <details className="style-tuning">
+              <summary>
+                <ChevronDown size={13} /> Tune appearance
+              </summary>
+              {(r.style === "pixel" || r.style === "hybrid") &&
+                select("Pixel block size", "pixelScale", [1, 2, 4, 8])}
+              {num("Colour steps", "colorSteps", 2, 64)}
+              {num("Saturation", "saturation", 0, 2, 0.05)}
+              {num("Contrast", "contrast", 0.5, 1.75, 0.05)}
+              {num("Dithering", "dither", 0, 1, 0.05)}
+              {r.style === "cartoon" && num("Shading bands", "toonBands", 2, 8)}
+            </details>
+          )}
+          <button
+            className="bake-styles"
+            disabled={!canGenerateStyles || disabled}
+            onClick={onGenerateStyles}
+          >
+            <Layers size={14} /> Bake 3 style sets
+          </button>
+          <small>Same camera and animation. Compare after baking.</small>
         </div>
         <details open>
           <summary>
