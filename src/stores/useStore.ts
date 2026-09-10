@@ -5,10 +5,13 @@ import {
   builtins,
   validateRecipe,
   stylePresets,
+  migrateStoredRecipe,
+  isRetiredBuiltin,
 } from "../features/recipes/recipes";
 import type { RenderRecipe } from "../types";
 import {
   defaultVariationStyles,
+  allStyles,
   validateStyleSelection,
   type SpriteStyle,
 } from "../features/styles/styles";
@@ -34,7 +37,7 @@ interface State {
 export const useStore = create<State>()(
   persist(
     (set, get) => ({
-      styleCatalogVersion: 2,
+      styleCatalogVersion: 3,
       styleSelection: [...defaultVariationStyles],
       selectStyles: (styles) =>
         set({ styleSelection: validateStyleSelection(styles) }),
@@ -96,17 +99,25 @@ export const useStore = create<State>()(
       merge: (saved, current) => {
         try {
           const s = saved as State;
+          const remainingPresets = s.presets
+            .filter((p) => !isRetiredBuiltin(p))
+            .map(migrateStoredRecipe);
+          const selection = Array.isArray(s.styleSelection)
+            ? s.styleSelection.filter((style) => allStyles.includes(style))
+            : [...defaultVariationStyles];
           return {
             ...current,
-            recipe: validateRecipe(s.recipe),
-            styleSelection: Array.isArray(s.styleSelection)
-              ? validateStyleSelection(s.styleSelection)
-              : [...defaultVariationStyles],
+            recipe: migrateStoredRecipe(s.recipe),
+            styleSelection:
+              selection.length === 0 && s.styleSelection?.length > 0
+                ? [...defaultVariationStyles]
+                : validateStyleSelection(selection),
             presets: [
-              ...s.presets.map(validateRecipe),
-              ...(s.styleCatalogVersion !== 2
+              ...remainingPresets,
+              ...(s.styleCatalogVersion !== 3
                 ? stylePresets.filter(
-                    (p) => !s.presets.some((saved) => saved.name === p.name),
+                    (p) =>
+                      !remainingPresets.some((saved) => saved.name === p.name),
                   )
                 : []),
             ],

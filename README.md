@@ -52,7 +52,7 @@ Runestone/
 
 ## Art styles and variation sets
 
-The catalogue contains **15 styles total**, including Original PBR and the original three stylised treatments:
+The catalogue contains **8 styles total**, including Original PBR and the original three stylised treatments:
 
 | Style | Treatment |
 | --- | --- |
@@ -61,26 +61,19 @@ The catalogue contains **15 styles total**, including Original PBR and the origi
 | Painted Cartoon | Warcraft-inspired matte toon lighting and bold colour. |
 | Pixel Realism | Fine pixels with retained surface detail. |
 | Retro 8 Bit | Large pixel blocks and a fixed 16-colour palette. |
-| Handheld Green | Four green tones and ordered dithering. |
 | Arcade 16 Bit | Fine pixels and a vivid fixed 32-colour palette. |
 | Comic Cel | Two shading bands, saturated colours and heavy contours. |
 | Pastel Storybook | Soft colours, gentle toon shading and violet outlines. |
-| Terracotta Clay | Warm matte clay; source colour textures are suppressed while cutout alpha is retained. |
-| Ink Engraving | Ivory and black ink with fixed crosshatching. |
-| Arcane Blueprint | Cyan contours and surface lines on deep blue shading. |
-| Sepia Relic | Bronze shadows and parchment highlights. |
-| Frost Crystal | Icy blue shading and glacial highlights. |
-| Ember Forged | Charcoal shadows, copper midtones and gold highlights. |
 
 Select an **Art style** and use **Generate** for one customised set. **Tune appearance** exposes relevant pixel size, colour, dithering, outline and shading-band controls. Cell size always remains the final PNG size. The inspection viewport shows the original asset; generated views show the treatment.
 
-For multiple sets, expand **Choose styles**, tick any subset, or use **Select all 15**, then **Bake 15 style sets**. **Original trio** restores the previous three-style selection. Your selection and recipes persist across restarts; existing custom presets survive the catalogue upgrade.
+For multiple sets, expand **Choose styles**, tick any subset, or use **Select all 8**, then **Bake 8 style sets**. **Original trio** restores the previous three-style selection. Your selection and recipes persist across restarts; existing custom presets survive the catalogue upgrade. Removed styles are filtered from saved selections and built-in presets; custom recipes using a removed style fall back to Original PBR while retaining their camera and output settings.
 
 Style sets share camera, framing, direction angles and animation times. Scroll the style tabs to select a result, open **Compare** for a compact overview or larger previews, and use **Export N sets** for a single ZIP/native folder with separately named assets. Multi-set output is capped at 128 megapixels; reduce cell size, FPS, directions or selected styles for large animations. Cancellation retains previous successful results.
 
 Exports use distinct asset names, so all styles coexist in Unreal. The importer uses nearest-neighbour filtering for pixelated styles and bilinear for smooth styles. Fixed palettes and screen-locked patterns are deterministic; these are local rendering treatments, not newly generated geometry or hand-painted textures.
 
-![15-style comparison](docs/fifteen-styles.png)
+![Eight-style comparison](docs/eight-styles.png)
 
 The original three ready-to-import example sets remain in `docs/examples/styles/`.
 

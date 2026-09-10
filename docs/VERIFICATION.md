@@ -68,3 +68,7 @@ The Windows installer job is still compiling in CI run 34413511176 at handoff. I
 - All 9 Playwright workflows pass. The full 15-style bake/export produced 15 distinct front-frame hashes and identical pivots, with 8 views per style. Handheld output uses at most four opaque colours. Empty selection disables baking; selected subsets and custom recipes survive reload/migration. Existing static, animated, export and malformed-input workflows pass.
 - Visual review: `docs/fifteen-styles.png`. The comparison supports compact overview, larger previews, shared frame navigation and horizontal style tabs.
 - Existing Unreal appearance/filter metadata is reused without importer changes.
+
+## Eight remaining styles — 10 September 2026
+
+Removed the seven requested styles and their renderer branches. The production build and 15 unit tests pass. Three targeted Playwright workflows pass: all eight remaining styles produce distinct exported sets and matching pivots; legacy custom presets survive; a stored retired active style, retired built-ins and mixed selections migrate without losing surviving presets, camera/output settings or preferences. `docs/eight-styles.png` shows the current catalogue. Earlier 15-style screenshots and reports describe the previous version.

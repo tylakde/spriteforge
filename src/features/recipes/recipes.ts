@@ -135,3 +135,28 @@ export function validateRecipe(input: unknown): RenderRecipe {
     throw new Error("Outline colour must be #RRGGBB.");
   return r as unknown as RenderRecipe;
 }
+
+// Only persisted state is migrated. Importing a retired recipe JSON still reports an invalid style.
+const retiredStyleNames: Record<string, string> = {
+  handheld: "Handheld Green",
+  clay: "Terracotta Clay",
+  ink: "Ink Engraving",
+  blueprint: "Arcane Blueprint",
+  sepia: "Sepia Relic",
+  frost: "Frost Crystal",
+  ember: "Ember Forged",
+};
+export function isRetiredBuiltin(recipe: RenderRecipe) {
+  return (
+    Object.hasOwn(retiredStyleNames, recipe.style) &&
+    retiredStyleNames[recipe.style] === recipe.name
+  );
+}
+export function migrateStoredRecipe(recipe: RenderRecipe): RenderRecipe {
+  if (recipe && Object.hasOwn(retiredStyleNames, recipe.style))
+    return validateRecipe({
+      ...applyStyle(recipe, "original"),
+      name: isRetiredBuiltin(recipe) ? baseRecipe.name : recipe.name,
+    });
+  return validateRecipe(recipe);
+}

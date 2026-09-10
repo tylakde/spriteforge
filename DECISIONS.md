@@ -15,3 +15,5 @@
 
 - The catalogue contains exactly 15 styles including Original PBR. Shared style definitions drive recipe validation, material shading families, pixel sampling, fixed palettes and post-processing. Existing style IDs remain stable.
 - Multi-style selection is explicit and persistent. Output is sequential and capped at 128 megapixels across the selection before rendering; all chosen sets use the same maximum outline framing margin. Catalogue version 2 adds missing new presets once without overwriting custom recipes.
+
+- Catalogue version 3 removes seven styles at the user's request, leaving eight. Retirement migration is confined to persisted state: matching retired built-in presets are removed, custom recipes retain camera/output settings using Original PBR, and surviving selections/preferences are retained. Importing a retired style JSON reports an unsupported style rather than silently changing its appearance. Historical exports remain intact.

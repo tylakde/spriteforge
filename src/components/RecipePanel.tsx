@@ -265,7 +265,7 @@ export default function RecipePanel({
             </summary>
             <div className="style-selection-actions">
               <button onClick={() => selectStyles([...allStyles])}>
-                Select all 15
+                Select all {allStyles.length}
               </button>
               <button onClick={() => selectStyles([])}>Clear</button>
               <button onClick={() => selectStyles([...defaultVariationStyles])}>

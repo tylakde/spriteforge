@@ -2,10 +2,9 @@ import type { RenderRecipe } from "../../types";
 type StyleDefinition = {
   label: string;
   description: string;
-  shading: "pbr" | "matte" | "toon" | "clay";
+  shading: "pbr" | "matte" | "toon";
   pixelated: boolean;
   binaryAlpha: boolean;
-  effect: "none" | "ink" | "blueprint" | "sepia" | "frost" | "ember";
   palette?: readonly string[];
 };
 const define = (
@@ -18,7 +17,6 @@ const define = (
   shading: "pbr",
   pixelated: false,
   binaryAlpha: false,
-  effect: "none",
   ...options,
 });
 export const styleDefinitions = {
@@ -62,15 +60,6 @@ export const styleDefinitions = {
         "#8cb3cb",
         "#e0e8eb",
       ],
-    },
-  ),
-  handheld: define(
-    "Handheld Green",
-    "Four green tones, chunky pixels and ordered dithering.",
-    {
-      pixelated: true,
-      binaryAlpha: true,
-      palette: ["#173c2a", "#416748", "#8aab60", "#d5e5a1"],
     },
   ),
   arcade: define(
@@ -124,36 +113,6 @@ export const styleDefinitions = {
     "Pastel Storybook",
     "Soft pastel colours, gentle toon shading and muted violet outlines.",
     { shading: "toon" },
-  ),
-  clay: define(
-    "Terracotta Clay",
-    "A warm, untextured clay sculpt with soft matte lighting.",
-    { shading: "clay" },
-  ),
-  ink: define(
-    "Ink Engraving",
-    "Black ink, ivory highlights and deterministic crosshatching.",
-    { shading: "matte", effect: "ink" },
-  ),
-  blueprint: define(
-    "Arcane Blueprint",
-    "Cyan contours and surface lines over deep blue shading.",
-    { shading: "matte", effect: "blueprint" },
-  ),
-  sepia: define(
-    "Sepia Relic",
-    "Antique bronze shadows and parchment-coloured highlights.",
-    { effect: "sepia" },
-  ),
-  frost: define(
-    "Frost Crystal",
-    "Icy blue shadows and bright glacial highlights.",
-    { effect: "frost" },
-  ),
-  ember: define(
-    "Ember Forged",
-    "Charcoal shadows, copper midtones and fiery gold highlights.",
-    { effect: "ember" },
   ),
 };
 export type SpriteStyle = keyof typeof styleDefinitions;
@@ -217,15 +176,6 @@ export const styleDefaults: Record<SpriteStyle, Partial<RenderRecipe>> = {
     outlineEnabled: true,
     outlineColor: "#171725",
   }),
-  handheld: defaults("handheld", {
-    pixelScale: 8,
-    colorSteps: 8,
-    saturation: 0,
-    contrast: 1.35,
-    dither: 0.8,
-    outlineEnabled: true,
-    outlineColor: "#173c2a",
-  }),
   arcade: defaults("arcade", {
     pixelScale: 2,
     colorSteps: 16,
@@ -250,43 +200,6 @@ export const styleDefaults: Record<SpriteStyle, Partial<RenderRecipe>> = {
     toonBands: 6,
     outlineEnabled: true,
     outlineColor: "#696581",
-  }),
-  clay: defaults("clay", { colorSteps: 32, saturation: 0.9, contrast: 0.95 }),
-  ink: defaults("ink", {
-    colorSteps: 8,
-    saturation: 0,
-    contrast: 1.2,
-    outlineEnabled: true,
-    outlineColor: "#171723",
-  }),
-  blueprint: defaults("blueprint", {
-    colorSteps: 16,
-    saturation: 0,
-    contrast: 1.1,
-    outlineEnabled: true,
-    outlineColor: "#9ae9fa",
-  }),
-  sepia: defaults("sepia", {
-    colorSteps: 16,
-    saturation: 0,
-    contrast: 1.15,
-    dither: 0.1,
-    outlineEnabled: true,
-    outlineColor: "#493323",
-  }),
-  frost: defaults("frost", {
-    colorSteps: 32,
-    saturation: 0.7,
-    contrast: 1.1,
-    outlineEnabled: true,
-    outlineColor: "#557d9a",
-  }),
-  ember: defaults("ember", {
-    colorSteps: 24,
-    saturation: 0.8,
-    contrast: 1.35,
-    outlineEnabled: true,
-    outlineColor: "#381914",
   }),
 };
 export function validateStyleSelection(input: unknown): SpriteStyle[] {
@@ -336,9 +249,7 @@ const palettes = new Map(
   ]),
 );
 const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-const mix = (a: readonly number[], b: readonly number[], t: number) =>
-  a.map((v, c) => v + (b[c] - v) * t);
-/** Fixed palettes, surface contours and screen-locked dithering remain deterministic across bakes. */
+/** Fixed palettes and screen-locked dithering remain deterministic across bakes. */
 export function gradePixels(
   pixels: Uint8ClampedArray,
   size: number,
@@ -348,15 +259,6 @@ export function gradePixels(
   const definition = styleDefinitions[recipe.style],
     palette = palettes.get(recipe.style),
     levels = recipe.colorSteps - 1;
-  const luminance =
-    definition.effect === "blueprint" ? new Float32Array(size * size) : null;
-  if (luminance)
-    for (let i = 0; i < luminance.length; i++)
-      luminance[i] =
-        (pixels[i * 4] * 0.2126 +
-          pixels[i * 4 + 1] * 0.7152 +
-          pixels[i * 4 + 2] * 0.0722) /
-        255;
   for (let i = 0; i < pixels.length; i += 4) {
     const a = pixels[i + 3];
     if (!a) continue;
@@ -377,69 +279,6 @@ export function gradePixels(
       );
       pixels[i + c] = (Math.round(graded * levels) / levels) * 255;
     }
-    const tone =
-      (pixels[i] * 0.2126 + pixels[i + 1] * 0.7152 + pixels[i + 2] * 0.0722) /
-      255;
-    let colour: number[] | undefined;
-    switch (definition.effect) {
-      case "ink": {
-        const hatch =
-          ((x + y) % 6 === 0 && tone < 0.72) ||
-          ((x - y + size) % 6 === 0 && tone < 0.4);
-        colour =
-          !hatch && tone > 0.28
-            ? mix([174, 166, 146], [249, 241, 211], tone)
-            : [23, 23, 35];
-        break;
-      }
-      case "blueprint": {
-        let edge = 0;
-        for (const [dx, dy] of [
-          [1, 0],
-          [-1, 0],
-          [0, 1],
-          [0, -1],
-        ]) {
-          const xx = x + dx,
-            yy = y + dy;
-          if (
-            xx < 0 ||
-            xx >= size ||
-            yy < 0 ||
-            yy >= size ||
-            pixels[(yy * size + xx) * 4 + 3] === 0
-          )
-            edge = 1;
-          else
-            edge = Math.max(
-              edge,
-              Math.abs(luminance![index] - luminance![yy * size + xx]) * 5,
-            );
-        }
-        colour = mix(
-          mix([12, 28, 64], [35, 79, 119], tone),
-          [154, 233, 250],
-          Math.min(1, edge),
-        );
-        break;
-      }
-      case "sepia":
-        colour = mix([43, 27, 20], [249, 219, 159], tone);
-        break;
-      case "frost":
-        colour =
-          tone < 0.5
-            ? mix([18, 40, 89], [66, 161, 191], tone * 2)
-            : mix([66, 161, 191], [229, 254, 255], (tone - 0.5) * 2);
-        break;
-      case "ember":
-        colour =
-          tone < 0.5
-            ? mix([24, 15, 28], [177, 50, 20], tone * 2)
-            : mix([177, 50, 20], [255, 220, 96], (tone - 0.5) * 2);
-        break;
-    }
-    if (colour) for (let c = 0; c < 3; c++) pixels[i + c] = colour[c];
     if (palette) {
       let best = palette[0],
         distance = Infinity;
