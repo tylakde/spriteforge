@@ -1,6 +1,6 @@
 # SpriteForge
 
-A local GLB/GLTF → directional sprite and animated atlas baker for Unreal Engine 5. React, Three.js and Tauri 2. No accounts, hosted backend or runtime cloud service.
+A local GLB/GLTF →  sprite and animated atlas baker for Unreal Engine 5. React, Three.js and Tauri 2. No accounts, hosted backend or runtime cloud service.
 
 ![SpriteForge workspace](docs/workspace.png)
 
