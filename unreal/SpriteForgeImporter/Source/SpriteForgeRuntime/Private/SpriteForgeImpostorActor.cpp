@@ -1,5 +1,6 @@
 #include "SpriteForgeImpostorActor.h"
 #include "SpriteForgeAsset.h"
+#include "SpriteForgeCharacterAsset.h"
 #include "ProceduralMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -17,6 +18,10 @@ ASpriteForgeImpostorActor::ASpriteForgeImpostorActor() {
 void ASpriteForgeImpostorActor::OnConstruction(const FTransform& Transform) {Super::OnConstruction(Transform);Rebuild();}
 void ASpriteForgeImpostorActor::BeginPlay() {Super::BeginPlay();Rebuild();}
 void ASpriteForgeImpostorActor::Rebuild() {
+    if (CharacterAsset) {
+        if (!CharacterAsset->States.Contains(CurrentState)) CurrentState=CharacterAsset->DefaultState;
+        if (const auto* State=CharacterAsset->States.Find(CurrentState)) { SpriteAsset=State->Sprite; AnimationName=State->Clip; }
+    }
     Quad->ClearAllMeshSections();DynamicMaterial=nullptr;CurrentFrame=INDEX_NONE;
     if (!SpriteAsset || !SpriteAsset->Material || !SpriteAsset->Atlas || SpriteAsset->CellSize.Y<=0) return;
     const float Height=FMath::Max(1.f,CellHeightCm),Width=Height*SpriteAsset->CellSize.X/SpriteAsset->CellSize.Y;
@@ -37,8 +42,17 @@ void ASpriteForgeImpostorActor::Rebuild() {
 void ASpriteForgeImpostorActor::SetAnimation(FName Name,bool bRestart) {AnimationName=Name;if(bRestart)Elapsed=0;CurrentFrame=INDEX_NONE;}
 void ASpriteForgeImpostorActor::Tick(float DeltaSeconds) {
     Super::Tick(DeltaSeconds);
-    if(bPlaying)Elapsed+=DeltaSeconds*FMath::Max(PlayRate,0.f);
+    AdvancePlayback(DeltaSeconds);
     if(APlayerCameraManager* Camera=UGameplayStatics::GetPlayerCameraManager(this,PlayerIndex))UpdateForCamera(Camera->GetCameraLocation());
+}
+void ASpriteForgeImpostorActor::AdvancePlayback(float DeltaSeconds) {
+    if(bPlaying)Elapsed+=FMath::Max(DeltaSeconds,0.f)*FMath::Max(PlayRate,0.f);
+    if(CharacterAsset) if(const auto* State=CharacterAsset->States.Find(CurrentState)) {
+        if(Elapsed>=State->Duration && !State->bLoop) {
+            if(State->bReturnToDefault && CurrentState!=CharacterAsset->DefaultState) SetState(CharacterAsset->DefaultState,true);
+            else Elapsed=FMath::Max(0.f,State->Duration-0.00001f);
+        }
+    }
 }
 void ASpriteForgeImpostorActor::UpdateForCamera(FVector CameraLocation) {
     if(!SpriteAsset || !DynamicMaterial)return;
@@ -54,4 +68,21 @@ void ASpriteForgeImpostorActor::UpdateForCamera(FVector CameraLocation) {
     const FVector2D Scale=Frame.UVSize-2*Inset,Offset=Frame.UVOrigin+Inset;
     DynamicMaterial->SetVectorParameterValue(TEXT("UVScale"),FLinearColor(Scale.X,Scale.Y,0,0));
     DynamicMaterial->SetVectorParameterValue(TEXT("UVOffset"),FLinearColor(Offset.X,Offset.Y,0,0));
+}
+
+bool ASpriteForgeImpostorActor::SetState(FName Name, bool bRestart) {
+    if(!CharacterAsset) return false;
+    const auto* State=CharacterAsset->States.Find(Name); if(!State || !State->Sprite) return false;
+    if(CurrentState==Name && !bRestart) return true;
+    CurrentState=Name; SpriteAsset=State->Sprite; AnimationName=State->Clip; Elapsed=0; Rebuild(); return true;
+}
+bool ASpriteForgeImpostorActor::PlayOneShot(FName Name) {
+    if(!CharacterAsset) return false;
+    const auto* State=CharacterAsset->States.Find(Name); if(!State || State->bLoop) return false;
+    return SetState(Name,true);
+}
+bool ASpriteForgeImpostorActor::IsOneShotActive() const {
+    if(!CharacterAsset) return false;
+    const auto* State=CharacterAsset->States.Find(CurrentState);
+    return State && !State->bLoop;
 }

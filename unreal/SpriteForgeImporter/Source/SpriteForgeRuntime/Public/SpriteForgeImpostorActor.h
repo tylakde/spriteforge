@@ -3,6 +3,7 @@
 #include "GameFramework/Actor.h"
 #include "SpriteForgeImpostorActor.generated.h"
 class USpriteForgeAsset;
+class USpriteForgeCharacterAsset;
 class UProceduralMeshComponent;
 class UMaterialInstanceDynamic;
 UCLASS(Blueprintable)
@@ -10,6 +11,13 @@ class SPRITEFORGERUNTIME_API ASpriteForgeImpostorActor : public AActor {
     GENERATED_BODY()
 public:
     ASpriteForgeImpostorActor();
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SpriteForge|Character") TObjectPtr<USpriteForgeCharacterAsset> CharacterAsset;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="SpriteForge|Character") FName CurrentState;
+    UFUNCTION(BlueprintCallable, Category="SpriteForge|Character") bool SetState(FName Name, bool bRestart=false);
+    UFUNCTION(BlueprintCallable, Category="SpriteForge|Character") bool PlayOneShot(FName Name);
+    UFUNCTION(BlueprintPure, Category="SpriteForge|Character") bool IsOneShotActive() const;
+    UFUNCTION(BlueprintCallable, Category="SpriteForge|Character") void AdvancePlayback(float DeltaSeconds);
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SpriteForge") TObjectPtr<USpriteForgeAsset> SpriteAsset;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SpriteForge", meta=(ClampMin="1")) float CellHeightCm = 250;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="SpriteForge") FName AnimationName;

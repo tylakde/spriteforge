@@ -1,11 +1,17 @@
 #include "SpriteForgeImportCommandlet.h"
 #include "SpriteForgeImportService.h"
 #include "SpriteForgeAsset.h"
+#include "SpriteForgeCharacterAsset.h"
 #include "SpriteForgeMetadata.h"
 #include "Misc/Parse.h"
 USpriteForgeImportCommandlet::USpriteForgeImportCommandlet(){IsClient=false;IsServer=false;IsEditor=true;LogToConsole=true;}
 int32 USpriteForgeImportCommandlet::Main(const FString& Params){
     FString Metadata,Atlas,Error;
+    if(FParse::Value(*Params,TEXT("Character="),Metadata)) {
+        auto* Character=SpriteForgeImportService::ImportCharacter(Metadata,Error);
+        if(!Character){UE_LOG(LogTemp,Error,TEXT("SpriteForge: %s"),*Error);return 1;}
+        UE_LOG(LogTemp,Display,TEXT("SPRITEFORGE_CHARACTER_IMPORT_OK: %s, %d states"),*Character->GetPathName(),Character->States.Num());return 0;
+    }
     if(!FParse::Value(*Params,TEXT("Metadata="),Metadata)){UE_LOG(LogTemp,Error,TEXT("Pass -Metadata=<SpriteForge.json>"));return 1;}
     FParse::Value(*Params,TEXT("Atlas="),Atlas);
     USpriteForgeAsset* Asset=SpriteForgeImportService::Import(Metadata,Atlas,Error);
