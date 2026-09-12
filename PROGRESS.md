@@ -52,3 +52,9 @@ Expanded to exactly 15 art styles total (Original PBR + 14 treatments), keeping 
 ## Catalogue reduction — 10 September 2026
 
 Removed Handheld Green, Terracotta Clay, Ink Engraving, Arcane Blueprint, Sepia Relic, Frost Crystal and Ember Forged as requested. Eight styles remain. Removed their rendering implementations; select-all counts follow the catalogue automatically. Catalogue version 3 filters saved selections and retired built-ins, preserving custom presets and preferences; custom retired-style recipes migrate to Original PBR. Verified 15 unit tests, production build and all three targeted browser workflows (eight-set bake/export/compare and both catalogue migrations). Current comparison: `docs/eight-styles.png`.
+
+## Character Forge expansion — 2026-09-12
+
+- Audit: reuse `renderSequence`, framing, atlas metadata/export, recipe styles, sequential batch semantics, and Unreal importer/impostor actor. No replacement rendering pipeline.
+- Baseline: 15 unit tests and production build pass. Initial browser run cannot launch Chromium because `libnspr4.so` is missing; repairing environment before browser validation.
+- Added versioned character state schema, deterministic clip classification, loop/one-shot defaults, mapping validation and exact sampled-frame/atlas-memory estimates with a 200-character population cap. 18 unit tests pass.
