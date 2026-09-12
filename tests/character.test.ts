@@ -96,3 +96,78 @@ describe("Character Forge states", () => {
     ).toThrow("Atlas");
   });
 });
+
+import {
+  advancePlayback,
+  locomotion,
+  selectFrame,
+  setState,
+} from "../src/features/character/runtime";
+import { makeMetadata } from "../src/features/atlas/atlas";
+import { characterFiles } from "../src/features/character/build";
+function runtimeCharacter() {
+  const states = mapAnimations(
+    ["Idle", "Walk", "Run", "Attack", "Death"].map((name) => ({
+      name,
+      duration: 0.6,
+    })),
+  );
+  return characterMetadata(
+    "Knight",
+    "Idle",
+    states.map((s) => ({
+      name: s.name,
+      clip: s.clipName,
+      fps: 4,
+      loop: s.loop,
+      returnToDefault: s.returnToDefault,
+      duration: s.duration,
+      frameCount: 3,
+      atlas: `${s.name}/Knight.png`,
+      metadata: `${s.name}/Knight.json`,
+      sprite: makeMetadata(
+        "Knight",
+        { ...baseRecipe, fps: 4 },
+        [0, 0.25, 0.5],
+        s.clipName,
+        0.8,
+        s.duration,
+      ),
+    })),
+  );
+}
+it("runtime loops at clip duration, holds death, returns attacks and selects camera-relative frames", () => {
+  const m = runtimeCharacter();
+  expect(
+    advancePlayback({ state: "Idle", time: 0.5, finished: false }, 0.2, m).time,
+  ).toBeCloseTo(0.1);
+  expect(
+    advancePlayback({ state: "Attack", time: 0.5, finished: false }, 0.2, m)
+      .state,
+  ).toBe("Idle");
+  expect(
+    advancePlayback({ state: "Death", time: 0.5, finished: false }, 0.2, m),
+  ).toEqual({ state: "Death", time: 0.6, finished: true });
+  expect(selectFrame(m.states[4], 0.6, 90, 0).directionDegrees).toBe(270);
+  expect(selectFrame(m.states[4], 0.6, 90, 0).animationFrame).toBe(2);
+  expect(selectFrame(m.states[0], 0, 45, 90).directionDegrees).toBe(45);
+  expect(locomotion(m, true, true)).toBe("Run");
+  expect(
+    setState({ state: "Idle", time: 0.4, finished: false }, "Missing", m).time,
+  ).toBe(0.4);
+});
+it("character package includes every atlas and backward-compatible state document", async () => {
+  const metadata = runtimeCharacter(),
+    atlases = Object.fromEntries(
+      metadata.states.map((s) => [s.atlas, new Blob(["png"])]),
+    );
+  const files = await characterFiles({ metadata, atlases });
+  expect(Object.keys(files)).toHaveLength(11);
+  expect(
+    JSON.parse(new TextDecoder().decode(files["Knight.character.json"])),
+  ).toEqual(metadata);
+  for (const state of metadata.states)
+    expect(JSON.parse(new TextDecoder().decode(files[state.metadata]))).toEqual(
+      state.sprite,
+    );
+});

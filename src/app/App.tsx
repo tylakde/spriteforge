@@ -36,7 +36,10 @@ import { useStore } from "../stores/useStore";
 import type { AssetSource, Generation, LoadedAsset } from "../types";
 import { renderVariationSets } from "../features/styles/variations";
 import VariationSets from "../components/VariationSets";
+import CharacterForge from "../features/character/CharacterForge";
 export default function App() {
+  const [workspace, setWorkspace] = useState("baker");
+  const [forgeBusy, setForgeBusy] = useState(false);
   const [sources, setSources] = useState<AssetSource[]>([]),
     [selected, setSelected] = useState<string | null>(null),
     [checked, setChecked] = useState<string[]>([]),
@@ -312,13 +315,16 @@ export default function App() {
       className="app-shell"
       onDragOver={(e) => {
         e.preventDefault();
-        if (!busy) setDragging(true);
+        if (!busy && !forgeBusy) setDragging(true);
       }}
       onDragLeave={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget as Node))
           setDragging(false);
       }}
-      onDrop={(e) => void drop(e)}
+      onDrop={(e) => {
+        if (forgeBusy) e.preventDefault();
+        else void drop(e);
+      }}
     >
       <header className="app-header">
         <div className="brand">
@@ -343,336 +349,377 @@ export default function App() {
           </button>
         </div>
       </header>
-      <main className="workspace">
-        <aside className="asset-panel">
-          <div className="panel-title">
-            ASSET LIBRARY <span className="count">{sources.length}</span>
-          </div>
-          <div className="library-actions">
-            <button
-              className="import-button"
-              disabled={busy}
-              onClick={() => void browse()}
-            >
-              <Plus size={16} /> Import assets
-            </button>
-            <button
-              title="Import folder with textures"
-              disabled={busy}
-              onClick={() => folderInput.current?.click()}
-            >
-              <FolderOpen size={16} />
-            </button>
-          </div>
-          <input
-            ref={filesInput}
-            type="file"
-            multiple
-            hidden
-            accept=".glb,.gltf,.bin,.png,.jpg,.jpeg,.webp,.ktx2"
-            onChange={(e) => {
-              if (e.target.files) importFiles(Array.from(e.target.files));
-              e.target.value = "";
-            }}
-          />
-          <input
-            ref={folderInput}
-            type="file"
-            multiple
-            hidden
-            {...{ webkitdirectory: "" }}
-            onChange={(e) => {
-              if (e.target.files) importFiles(Array.from(e.target.files));
-              e.target.value = "";
-            }}
-          />
-          <div className="asset-list">
-            {sources.map((s) => (
-              <div
-                className={`asset-row ${s.id === selected ? "selected" : ""}`}
-                key={s.id}
+      <nav className="workspace-tabs" aria-label="Workspace">
+        <button
+          className={workspace === "baker" ? "active" : ""}
+          disabled={busy || forgeBusy}
+          onClick={() => setWorkspace("baker")}
+        >
+          Sprite Baker
+        </button>
+        <button
+          className={workspace === "forge" ? "active" : ""}
+          disabled={busy || forgeBusy}
+          onClick={() => setWorkspace("forge")}
+        >
+          Character Forge
+        </button>
+        <button
+          disabled={busy || forgeBusy}
+          onClick={() => {
+            setWorkspace("baker");
+            document.querySelector(".batch-queue")?.scrollIntoView();
+          }}
+        >
+          Batch
+        </button>
+      </nav>
+      <div
+        className="baker-workspace"
+        style={{ display: workspace === "baker" ? "flex" : "none" }}
+      >
+        <main className="workspace">
+          <aside className="asset-panel">
+            <div className="panel-title">
+              ASSET LIBRARY <span className="count">{sources.length}</span>
+            </div>
+            <div className="library-actions">
+              <button
+                className="import-button"
+                disabled={busy}
+                onClick={() => void browse()}
               >
-                <input
-                  aria-label={`Batch select ${s.name}`}
-                  type="checkbox"
-                  disabled={busy}
-                  checked={checked.includes(s.id)}
-                  onChange={(e) =>
-                    setChecked((c) =>
-                      e.target.checked
-                        ? [...c, s.id]
-                        : c.filter((id) => id !== s.id),
-                    )
-                  }
-                />
-                <button disabled={busy} onClick={() => activate(s)}>
-                  <Box size={21} />
-                  <span>
-                    {s.name.replace(/\.(glb|gltf)$/i, "")}
-                    <small>
-                      {s.name.split(".").pop()?.toUpperCase()} ·{" "}
-                      {(s.file.size / 1024).toFixed(0)} KB
-                    </small>
-                  </span>
-                </button>
-                <button
-                  className="remove-asset"
-                  aria-label={`Remove ${s.name}`}
-                  disabled={busy}
-                  onClick={() => {
-                    setSources((a) => a.filter((x) => x.id !== s.id));
-                    setChecked((c) => c.filter((id) => id !== s.id));
-                    if (s.id === selected) {
-                      setSelected(null);
-                      setStats(null);
-                      setClips([]);
-                      setPlaying(false);
+                <Plus size={16} /> Import assets
+              </button>
+              <button
+                title="Import folder with textures"
+                disabled={busy}
+                onClick={() => folderInput.current?.click()}
+              >
+                <FolderOpen size={16} />
+              </button>
+            </div>
+            <input
+              ref={filesInput}
+              type="file"
+              multiple
+              hidden
+              accept=".glb,.gltf,.bin,.png,.jpg,.jpeg,.webp,.ktx2"
+              onChange={(e) => {
+                if (e.target.files) importFiles(Array.from(e.target.files));
+                e.target.value = "";
+              }}
+            />
+            <input
+              ref={folderInput}
+              type="file"
+              multiple
+              hidden
+              {...{ webkitdirectory: "" }}
+              onChange={(e) => {
+                if (e.target.files) importFiles(Array.from(e.target.files));
+                e.target.value = "";
+              }}
+            />
+            <div className="asset-list">
+              {sources.map((s) => (
+                <div
+                  className={`asset-row ${s.id === selected ? "selected" : ""}`}
+                  key={s.id}
+                >
+                  <input
+                    aria-label={`Batch select ${s.name}`}
+                    type="checkbox"
+                    disabled={busy}
+                    checked={checked.includes(s.id)}
+                    onChange={(e) =>
+                      setChecked((c) =>
+                        e.target.checked
+                          ? [...c, s.id]
+                          : c.filter((id) => id !== s.id),
+                      )
                     }
+                  />
+                  <button disabled={busy} onClick={() => activate(s)}>
+                    <Box size={21} />
+                    <span>
+                      {s.name.replace(/\.(glb|gltf)$/i, "")}
+                      <small>
+                        {s.name.split(".").pop()?.toUpperCase()} ·{" "}
+                        {(s.file.size / 1024).toFixed(0)} KB
+                      </small>
+                    </span>
+                  </button>
+                  <button
+                    className="remove-asset"
+                    aria-label={`Remove ${s.name}`}
+                    disabled={busy}
+                    onClick={() => {
+                      setSources((a) => a.filter((x) => x.id !== s.id));
+                      setChecked((c) => c.filter((id) => id !== s.id));
+                      if (s.id === selected) {
+                        setSelected(null);
+                        setStats(null);
+                        setClips([]);
+                        setPlaying(false);
+                      }
+                    }}
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+              {!sources.length && (
+                <p className="library-hint">
+                  A home for your next
+                  <br />
+                  game-ready sprites.
+                </p>
+              )}
+            </div>
+            <div className="samples">
+              <div className="overline">TRY A SAMPLE</div>
+              <button disabled={busy} onClick={() => void sample("Runestone")}>
+                <Package size={16} />
+                <span>
+                  Runestone<small>Textured environment prop</small>
+                </span>
+                <Plus size={13} />
+              </button>
+              <button disabled={busy} onClick={() => void sample("Sentinel")}>
+                <Box size={16} />
+                <span>
+                  Sentinel<small>Animated character</small>
+                </span>
+                <Plus size={13} />
+              </button>
+            </div>
+            <div className="library-footer">
+              <span>GLB / GLTF</span>
+              <span>Drop files anywhere</span>
+            </div>
+          </aside>
+          <section className="preview-panel">
+            <div className="preview-heading">
+              <div>
+                <span className="tab-active">Model preview</span>
+                <span className="tab-note">Inspection camera</span>
+              </div>
+              {source && (
+                <span className="tiny-tag">
+                  {clips.length ? "ANIMATED" : "STATIC MESH"}
+                </span>
+              )}
+            </div>
+            <Viewport
+              source={source}
+              clipIndex={clipIndex}
+              playing={playing}
+              time={time}
+              resetKey={0}
+              onLoaded={(asset) => {
+                setStats(asset.stats);
+                setClips(
+                  asset.animations.map((c, i) => ({
+                    name: c.name || `Animation ${i + 1}`,
+                    duration: c.duration,
+                  })),
+                );
+              }}
+              onError={report}
+              onTime={setTime}
+            />
+            <div className="model-info">
+              <span>
+                <Box size={13} />
+                {stats ? `${stats.meshes} meshes` : "No model selected"}
+              </span>
+              {stats && (
+                <>
+                  <span>{stats.triangles.toLocaleString()} tris</span>
+                  <span>{stats.materials} materials</span>
+                  <span>
+                    {stats.dimensions.map((d) => d.toFixed(2)).join(" × ")} m
+                  </span>
+                </>
+              )}
+            </div>
+            {clips.length > 0 && (
+              <div className="animation-bar">
+                <button
+                  aria-label={playing ? "Pause animation" : "Play animation"}
+                  disabled={clipIndex === null}
+                  onClick={() => setPlaying(!playing)}
+                >
+                  {playing ? <Pause size={15} /> : <Play size={15} />}
+                </button>
+                <select
+                  aria-label="Animation clip"
+                  disabled={busy}
+                  value={clipIndex ?? ""}
+                  onChange={(e) => {
+                    setClipIndex(
+                      e.target.value === "" ? null : Number(e.target.value),
+                    );
+                    setTime(0);
                   }}
                 >
-                  <X size={12} />
-                </button>
-              </div>
-            ))}
-            {!sources.length && (
-              <p className="library-hint">
-                A home for your next
-                <br />
-                game-ready sprites.
-              </p>
-            )}
-          </div>
-          <div className="samples">
-            <div className="overline">TRY A SAMPLE</div>
-            <button disabled={busy} onClick={() => void sample("Runestone")}>
-              <Package size={16} />
-              <span>
-                Runestone<small>Textured environment prop</small>
-              </span>
-              <Plus size={13} />
-            </button>
-            <button disabled={busy} onClick={() => void sample("Sentinel")}>
-              <Box size={16} />
-              <span>
-                Sentinel<small>Animated character</small>
-              </span>
-              <Plus size={13} />
-            </button>
-          </div>
-          <div className="library-footer">
-            <span>GLB / GLTF</span>
-            <span>Drop files anywhere</span>
-          </div>
-        </aside>
-        <section className="preview-panel">
-          <div className="preview-heading">
-            <div>
-              <span className="tab-active">Model preview</span>
-              <span className="tab-note">Inspection camera</span>
-            </div>
-            {source && (
-              <span className="tiny-tag">
-                {clips.length ? "ANIMATED" : "STATIC MESH"}
-              </span>
-            )}
-          </div>
-          <Viewport
-            source={source}
-            clipIndex={clipIndex}
-            playing={playing}
-            time={time}
-            resetKey={0}
-            onLoaded={(asset) => {
-              setStats(asset.stats);
-              setClips(
-                asset.animations.map((c, i) => ({
-                  name: c.name || `Animation ${i + 1}`,
-                  duration: c.duration,
-                })),
-              );
-            }}
-            onError={report}
-            onTime={setTime}
-          />
-          <div className="model-info">
-            <span>
-              <Box size={13} />
-              {stats ? `${stats.meshes} meshes` : "No model selected"}
-            </span>
-            {stats && (
-              <>
-                <span>{stats.triangles.toLocaleString()} tris</span>
-                <span>{stats.materials} materials</span>
-                <span>
-                  {stats.dimensions.map((d) => d.toFixed(2)).join(" × ")} m
-                </span>
-              </>
-            )}
-          </div>
-          {clips.length > 0 && (
-            <div className="animation-bar">
-              <button
-                aria-label={playing ? "Pause animation" : "Play animation"}
-                disabled={clipIndex === null}
-                onClick={() => setPlaying(!playing)}
-              >
-                {playing ? <Pause size={15} /> : <Play size={15} />}
-              </button>
-              <select
-                aria-label="Animation clip"
-                disabled={busy}
-                value={clipIndex ?? ""}
-                onChange={(e) => {
-                  setClipIndex(
-                    e.target.value === "" ? null : Number(e.target.value),
-                  );
-                  setTime(0);
-                }}
-              >
-                <option value="">Static pose</option>
-                {clips.map((c, i) => (
-                  <option key={i} value={i}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-              <input
-                aria-label="Animation time"
-                type="range"
-                disabled={clipIndex === null}
-                min={0}
-                max={clips[clipIndex ?? 0]?.duration ?? 1}
-                step="0.001"
-                value={time}
-                onChange={(e) => {
-                  setPlaying(false);
-                  setTime(Number(e.target.value));
-                }}
-              />
-              <span>{time.toFixed(2)}s</span>
-              <label>
-                FPS{" "}
+                  <option value="">Static pose</option>
+                  {clips.map((c, i) => (
+                    <option key={i} value={i}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
                 <input
-                  aria-label="Animation FPS"
-                  disabled={busy}
-                  type="number"
-                  min={1}
-                  max={60}
-                  value={recipe.fps}
+                  aria-label="Animation time"
+                  type="range"
+                  disabled={clipIndex === null}
+                  min={0}
+                  max={clips[clipIndex ?? 0]?.duration ?? 1}
+                  step="0.001"
+                  value={time}
                   onChange={(e) => {
-                    const fps = Number(e.target.value);
-                    if (Number.isInteger(fps) && fps >= 1 && fps <= 60)
-                      update({ fps });
+                    setPlaying(false);
+                    setTime(Number(e.target.value));
                   }}
                 />
-              </label>
+                <span>{time.toFixed(2)}s</span>
+                <label>
+                  FPS{" "}
+                  <input
+                    aria-label="Animation FPS"
+                    disabled={busy}
+                    type="number"
+                    min={1}
+                    max={60}
+                    value={recipe.fps}
+                    onChange={(e) => {
+                      const fps = Number(e.target.value);
+                      if (Number.isInteger(fps) && fps >= 1 && fps <= 60)
+                        update({ fps });
+                    }}
+                  />
+                </label>
+              </div>
+            )}
+          </section>
+          <RecipePanel
+            disabled={busy}
+            canGenerateStyles={!!source && !!stats}
+            onGenerateStyles={() => void generateStyles()}
+            onError={report}
+          />
+        </main>
+        {variations.length > 0 && (
+          <VariationSets
+            sets={variations}
+            selected={generation}
+            disabled={busy}
+            onSelect={selectVariation}
+            onExport={() => void exportStyles()}
+          />
+        )}
+        <GeneratedViews generation={generation} stale={stale} />
+        {queue.length > 0 && (
+          <section className="batch-queue">
+            <div className="queue-title">
+              BATCH QUEUE{" "}
+              <button
+                disabled={busy}
+                onClick={() => setQueue([])}
+                aria-label="Close batch queue"
+              >
+                <X size={14} />
+              </button>
             </div>
-          )}
-        </section>
-        <RecipePanel
-          disabled={busy}
-          canGenerateStyles={!!source && !!stats}
-          onGenerateStyles={() => void generateStyles()}
-          onError={report}
-        />
-      </main>
-      {variations.length > 0 && (
-        <VariationSets
-          sets={variations}
-          selected={generation}
-          disabled={busy}
-          onSelect={selectVariation}
-          onExport={() => void exportStyles()}
-        />
-      )}
-      <GeneratedViews generation={generation} stale={stale} />
-      {queue.length > 0 && (
-        <section className="batch-queue">
-          <div className="queue-title">
-            BATCH QUEUE{" "}
-            <button
-              disabled={busy}
-              onClick={() => setQueue([])}
-              aria-label="Close batch queue"
-            >
-              <X size={14} />
+            {queue.map((q) => (
+              <div className={`queue-item ${q.status}`} key={q.id}>
+                {q.status === "done" ? (
+                  <Check size={13} />
+                ) : q.status === "error" ? (
+                  <AlertCircle size={13} />
+                ) : (
+                  <Layers size={13} />
+                )}
+                <b>{q.name}</b>
+                <span>{q.detail}</span>
+                <progress value={q.progress} max={1} />
+              </div>
+            ))}
+          </section>
+        )}
+        {error && (
+          <div className="error-banner" role="alert">
+            <AlertCircle size={16} />
+            <span>{error}</span>
+            <button aria-label="Dismiss error" onClick={() => setError("")}>
+              <X size={15} />
             </button>
           </div>
-          {queue.map((q) => (
-            <div className={`queue-item ${q.status}`} key={q.id}>
-              {q.status === "done" ? (
-                <Check size={13} />
-              ) : q.status === "error" ? (
-                <AlertCircle size={13} />
-              ) : (
-                <Layers size={13} />
-              )}
-              <b>{q.name}</b>
-              <span>{q.detail}</span>
-              <progress value={q.progress} max={1} />
-            </div>
-          ))}
-        </section>
-      )}
-      {error && (
-        <div className="error-banner" role="alert">
-          <AlertCircle size={16} />
-          <span>{error}</span>
-          <button aria-label="Dismiss error" onClick={() => setError("")}>
-            <X size={15} />
-          </button>
-        </div>
-      )}
-      <footer className="action-bar">
-        <div className="status">
-          <span className={`live-dot ${busy ? "working" : ""}`} />
-          <span title={status}>{status}</span>
-          {busy && <progress value={progress} max={1} />}
-        </div>
-        <div className="actions">
-          <span className="output-summary">
-            {recipe.cellSize} px <b>·</b> {recipe.directionCount} views <b>·</b>{" "}
-            {recipe.background === "transparent" ? "RGBA" : "RGB"}
-          </span>
-          {busy ? (
-            <button onClick={() => abort.current?.abort()}>
-              <Square size={13} /> Cancel
-            </button>
-          ) : (
-            <button disabled={!checked.length} onClick={() => void batch()}>
-              <Layers size={15} /> Batch{" "}
-              {checked.length > 0 && `(${checked.length})`}
-            </button>
-          )}
-          <button
-            className="primary"
-            disabled={!source || !stats || busy}
-            onClick={() => void generate()}
-          >
-            <Sparkles size={16} />
-            {busy ? "Working…" : "Generate"}
-          </button>
-          <div className="export-group">
-            <button
-              disabled={!generation || busy}
-              onClick={() => void exportCurrent()}
-            >
-              <Download size={15} /> Export
-            </button>
-            <select
-              aria-label="Export contents"
-              value={outputMode}
-              onChange={(e) =>
-                preferences({ outputMode: e.target.value as typeof outputMode })
-              }
-            >
-              <option value="all">Everything</option>
-              <option value="atlas">Atlas + metadata</option>
-              <option value="frames">Individual PNGs</option>
-            </select>
+        )}
+        <footer className="action-bar">
+          <div className="status">
+            <span className={`live-dot ${busy ? "working" : ""}`} />
+            <span title={status}>{status}</span>
+            {busy && <progress value={progress} max={1} />}
           </div>
-        </div>
-      </footer>
+          <div className="actions">
+            <span className="output-summary">
+              {recipe.cellSize} px <b>·</b> {recipe.directionCount} views{" "}
+              <b>·</b> {recipe.background === "transparent" ? "RGBA" : "RGB"}
+            </span>
+            {busy ? (
+              <button onClick={() => abort.current?.abort()}>
+                <Square size={13} /> Cancel
+              </button>
+            ) : (
+              <button disabled={!checked.length} onClick={() => void batch()}>
+                <Layers size={15} /> Batch{" "}
+                {checked.length > 0 && `(${checked.length})`}
+              </button>
+            )}
+            <button
+              className="primary"
+              disabled={!source || !stats || busy}
+              onClick={() => void generate()}
+            >
+              <Sparkles size={16} />
+              {busy ? "Working…" : "Generate"}
+            </button>
+            <div className="export-group">
+              <button
+                disabled={!generation || busy}
+                onClick={() => void exportCurrent()}
+              >
+                <Download size={15} /> Export
+              </button>
+              <select
+                aria-label="Export contents"
+                value={outputMode}
+                onChange={(e) =>
+                  preferences({
+                    outputMode: e.target.value as typeof outputMode,
+                  })
+                }
+              >
+                <option value="all">Everything</option>
+                <option value="atlas">Atlas + metadata</option>
+                <option value="frames">Individual PNGs</option>
+              </select>
+            </div>
+          </div>
+        </footer>
+      </div>
+      {workspace === "forge" && (
+        <CharacterForge
+          sources={sources}
+          source={source}
+          importFiles={importFiles}
+          selectSource={activate}
+          onBusy={setForgeBusy}
+        />
+      )}
       {dragging && (
         <div className="drop-overlay">
           <FolderOpen size={44} />

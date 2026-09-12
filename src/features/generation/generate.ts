@@ -15,7 +15,12 @@ import { lighting } from "../renderer/lighting";
 import { buildAtlas, canvasBlob, makeMetadata } from "../atlas/atlas";
 import { sampleTimes, yieldToUI } from "../../lib/math";
 import { validateRecipe } from "../recipes/recipes";
-import type { AssetSource, Generation, RenderRecipe } from "../../types";
+import type {
+  AssetSource,
+  Generation,
+  LoadedAsset,
+  RenderRecipe,
+} from "../../types";
 import { effectivePixelScale, gradePixels, hexRGB } from "../styles/styles";
 import { prepareStyleMaterials } from "../styles/materials";
 export function outlinePixels(
@@ -54,6 +59,11 @@ export async function renderSequence(
   clipIndex: number | null,
   onProgress: (value: number, label: string) => void,
   signal?: AbortSignal,
+  options?: {
+    load?: () => Promise<LoadedAsset>;
+    bounds?: Box3;
+    atlasOnly?: boolean;
+  },
 ): Promise<Generation> {
   const recipe = validateRecipe(rawRecipe);
   const check = () => {
@@ -61,7 +71,7 @@ export async function renderSequence(
   };
   onProgress(0, "Loading asset");
   check();
-  const asset = await loadAsset(source);
+  const asset = await (options?.load?.() ?? loadAsset(source));
   let renderer: WebGLRenderer | undefined,
     target: WebGLRenderTarget | undefined,
     mixer: AnimationMixer | undefined;
@@ -85,7 +95,7 @@ export async function renderSequence(
     if (clip) {
       mixer = new AnimationMixer(asset.root);
       mixer.clipAction(clip).play();
-      for (let i = 0; i < times.length; i++) {
+      for (let i = 0; !options?.bounds && i < times.length; i++) {
         check();
         mixer.setTime(times[i]);
         asset.root.updateMatrixWorld(true);
@@ -96,6 +106,7 @@ export async function renderSequence(
         }
       }
     } else bounds.copy(asset.bounds);
+    if (options?.bounds) bounds.copy(options.bounds);
     const framing = calculateFraming(bounds, recipe);
     const groundInClip = new Vector3(0, 0, 0).project(
       renderCamera(framing, recipe, 0),
@@ -193,10 +204,12 @@ export async function renderSequence(
       outputCtx.clearRect(0, 0, recipe.cellSize, recipe.cellSize);
       outputCtx.drawImage(canvas, 0, 0, recipe.cellSize, recipe.cellSize);
       frames.push(await canvasBlob(output));
-      thumbCtx.clearRect(0, 0, 96, 96);
-      thumbCtx.imageSmoothingEnabled = pixelScale === 1;
-      thumbCtx.drawImage(output, 0, 0, 96, 96);
-      thumbnails.push(URL.createObjectURL(await canvasBlob(thumb)));
+      if (!options?.atlasOnly) {
+        thumbCtx.clearRect(0, 0, 96, 96);
+        thumbCtx.imageSmoothingEnabled = pixelScale === 1;
+        thumbCtx.drawImage(output, 0, 0, 96, 96);
+        thumbnails.push(URL.createObjectURL(await canvasBlob(thumb)));
+      }
       onProgress(
         0.1 + (0.8 * (frame.index + 1)) / metadata.frames.length,
         `Rendering ${frame.index + 1} / ${metadata.frames.length}`,
@@ -213,6 +226,7 @@ export async function renderSequence(
       thumb.width =
       thumb.height =
         1;
+    if (options?.atlasOnly) frames.length = 0;
     onProgress(1, "Ready to export");
     return {
       sourceId: source.id,

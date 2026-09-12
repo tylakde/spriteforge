@@ -56,7 +56,7 @@ export async function generationFiles(
       );
   return files;
 }
-async function writeExport(
+export async function writeExport(
   files: Record<string, Uint8Array>,
   assetName: string,
   zipName: string,

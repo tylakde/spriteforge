@@ -33,7 +33,10 @@ export function disposeObject(root: Group) {
       data.close();
   }
 }
-export async function loadAsset(source: AssetSource): Promise<LoadedAsset> {
+export async function loadAsset(
+  source: AssetSource,
+  options?: { raw?: boolean; animationOnly?: boolean },
+): Promise<LoadedAsset> {
   const urls: string[] = [];
   const missing: string[] = [];
   const manager = new LoadingManager();
@@ -86,12 +89,20 @@ export async function loadAsset(source: AssetSource): Promise<LoadedAsset> {
     root.updateMatrixWorld(true);
     let bounds = new Box3().setFromObject(root, true);
     if (
-      bounds.isEmpty() ||
-      ![...bounds.min.toArray(), ...bounds.max.toArray()].every(Number.isFinite)
+      !options?.animationOnly &&
+      (bounds.isEmpty() ||
+        ![...bounds.min.toArray(), ...bounds.max.toArray()].every(
+          Number.isFinite,
+        ))
     )
       throw new Error("Asset has no valid visible geometry.");
     const center = bounds.getCenter(new Vector3());
-    gltf.scene.position.add(new Vector3(-center.x, -bounds.min.y, -center.z));
+    if (!options?.raw && !options?.animationOnly) {
+      const origin = new Group();
+      origin.position.set(-center.x, -bounds.min.y, -center.z);
+      origin.add(gltf.scene);
+      root.add(origin);
+    }
     root.updateMatrixWorld(true);
     bounds = new Box3().setFromObject(root, true);
     const dimensions = bounds.getSize(new Vector3()).toArray() as [
@@ -114,7 +125,7 @@ export async function loadAsset(source: AssetSource): Promise<LoadedAsset> {
         o.frustumCulled = false;
       }
     });
-    if (!meshes || Math.max(...dimensions) < 1e-8)
+    if (!options?.animationOnly && (!meshes || Math.max(...dimensions) < 1e-8))
       throw new Error("Asset has no renderable meshes.");
     gltf.animations.forEach((clip, i) => {
       if (!clip.name) clip.name = `Animation ${i + 1}`;

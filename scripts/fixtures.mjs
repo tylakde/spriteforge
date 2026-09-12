@@ -1,7 +1,7 @@
 import { BoxGeometry, CylinderGeometry, IcosahedronGeometry } from "three";
 import { mkdirSync, writeFileSync } from "node:fs";
 // Original procedural fixtures: no downloaded artwork or network dependencies.
-function build(animated) {
+function build(animated, forge = false) {
   const chunks = [];
   let offset = 0;
   const views = [],
@@ -143,6 +143,43 @@ function build(animated) {
       channels: [{ sampler: 0, target: { node: root, path: "translation" } }],
     });
   }
+  if (forge) {
+    const input = add(new Float32Array([0, 0.25, 0.5, 0.75, 1]), "SCALAR");
+    for (const [name, height, stride] of [
+      ["Walk_Fwd", 0.12, 0.22],
+      ["Jog", 0.22, 0.4],
+      ["SwordAttack_A", 0.04, 0.7],
+      ["DamageReact", -0.12, -0.2],
+      ["Death_A", -0.8, 0.1],
+      ["Dodge_Roll", -0.4, 0.5],
+    ]) {
+      const output = add(
+        new Float32Array([
+          0,
+          0,
+          0,
+          0,
+          height,
+          stride,
+          0,
+          0,
+          0,
+          0,
+          height,
+          -stride,
+          0,
+          0,
+          0,
+        ]),
+        "VEC3",
+      );
+      animations.push({
+        name,
+        samplers: [{ input, output, interpolation: "LINEAR" }],
+        channels: [{ sampler: 0, target: { node: root, path: "translation" } }],
+      });
+    }
+  }
   const png =
     "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAHklEQVR4nGM4e/bsfxCGAXQ+A0EFuCRgfMIKBoEbAM+/7EFT3jvPAAAAAElFTkSuQmCC";
   const doc = {
@@ -191,6 +228,7 @@ for (const [name, animated] of [
     writeFileSync("fixtures/sidecar/mesh.bin", bin);
   }
 }
+writeFileSync("public/samples/ForgeKnight.glb", build(true, true).glb);
 writeFileSync("fixtures/malformed.glb", "not a glb");
 console.log(
   "Created textured static and animated GLB fixtures, GLTF sidecars and malformed input.",

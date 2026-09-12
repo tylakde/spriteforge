@@ -20,6 +20,7 @@ import { useStore } from "../../stores/useStore";
 import type { AssetSource, LoadedAsset } from "../../types";
 interface Props {
   source: AssetSource | null;
+  loader?: () => Promise<LoadedAsset>;
   clipIndex: number | null;
   playing: boolean;
   time: number;
@@ -30,6 +31,7 @@ interface Props {
 }
 export default function Viewport({
   source,
+  loader,
   clipIndex,
   playing,
   time,
@@ -106,7 +108,7 @@ export default function Viewport({
     animate();
     if (source) {
       setLoading(true);
-      loadAsset(source)
+      (loader ? loader() : loadAsset(source))
         .then((loaded) => {
           if (disposed) {
             loaded.dispose();
@@ -165,7 +167,7 @@ export default function Viewport({
       renderer!.forceContextLoss();
       renderer!.domElement.remove();
     };
-  }, [source]);
+  }, [source, loader]);
   useEffect(() => {
     if (gridRef.current) gridRef.current.visible = grid;
   }, [grid, loading]);
