@@ -75,8 +75,45 @@ try {
     .last()
     .click();
   assert.equal((await download).suggestedFilename(), "Runestone_all.zip");
+  await page
+    .getByRole("button", { name: "Character Forge", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Try animated Knight demo", exact: true })
+    .click();
+  await page.getByLabel("State name 7", { exact: true }).waitFor();
+  await page.getByLabel("Character directions").selectOption("4");
+  await page.getByLabel("Character resolution").selectOption("128");
+  await page.getByText("Advanced rendering", { exact: true }).click();
+  await page.getByLabel("Character FPS").fill("2");
+  await page
+    .getByRole("button", { name: "Build playable character", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Character play test" })
+    .waitFor({ timeout: 60000 });
+  await page.getByLabel("Playable sprite arena").focus();
+  await page.keyboard.down("w");
+  await page.waitForFunction(() =>
+    document
+      .querySelector('[data-testid="play-debug"]')
+      ?.textContent?.includes("State: Walk"),
+  );
+  await page.keyboard.up("w");
+  await page
+    .getByRole("button", { name: "Close play test", exact: true })
+    .click();
+  const character = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Send to Unreal", exact: true })
+    .click();
+  assert.equal(
+    (await character).suggestedFilename(),
+    "ForgeKnight_character.zip",
+  );
+  assert.deepEqual(errors, []);
   console.log(
-    "Production smoke passed: 1366×768 UI, desktop CSP, WebAssembly decoder, import, 8-view generation and ZIP export.",
+    "Production smoke passed: desktop CSP, WebAssembly decoder, original 8-view bake/export, complete character bake, playable sprites and Unreal package export.",
   );
 } finally {
   await browser?.close();

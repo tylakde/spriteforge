@@ -66,6 +66,7 @@ export function classifyAnimation(name: string): string {
     ["Idle", /idle|stand|breath/],
     ["Jump", /jump|leap/],
     ["Cast", /cast|spell/],
+    ["Ability 2", /(?:ability|skill)[ _-]*0?2(?:\D|$)/],
     ["Ability 1", /ability|skill/],
     ["Interact", /interact|use|pickup/],
     ["Emote", /emote|dance|wave|taunt/],
@@ -78,10 +79,14 @@ export function mapAnimations(
   const used = new Set<string>();
   return clips.map((clip, clipIndex) => {
     let base = classifyAnimation(clip.name);
-    if (base === "Custom") base = safeName(clip.name);
+    if (base === "Custom") {
+      base = safeName(clip.name).slice(0, 58);
+      if (!/^[A-Za-z]/.test(base)) base = `Custom ${base}`.slice(0, 58);
+    }
     let name = base,
       suffix = 2;
-    while (used.has(name.toLowerCase())) name = `${base} ${suffix++}`;
+    while (used.has(name.toLowerCase()))
+      name = `${base.replace(/ 1$/, "")} ${suffix++}`;
     used.add(name.toLowerCase());
     return {
       name,

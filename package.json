@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "tauri": "tauri",
-    "fixtures": "node scripts/fixtures.mjs",
+    "fixtures": "node scripts/fixtures.mjs && node scripts/character-fixtures.mjs",
     "format": "prettier --write src tests scripts *.ts *.json",
     "format:check": "prettier --check src tests scripts *.ts *.json",
     "test:production": "npm run build && node scripts/smoke-production.mjs"

@@ -171,3 +171,18 @@ it("character package includes every atlas and backward-compatible state documen
       state.sprite,
     );
 });
+
+it("maps optional ability slots and unknown numeric clip names to valid states", () => {
+  const states = mapAnimations(
+    ["Ability01", "Ability02", "123_unknown"].map((name) => ({
+      name,
+      duration: 1,
+    })),
+  );
+  expect(states.map((s) => s.name)).toEqual([
+    "Ability 1",
+    "Ability 2",
+    "Custom 123_unknown",
+  ]);
+  expect(validateMappings(states, "Ability 1")).toHaveLength(3);
+});

@@ -1,6 +1,21 @@
 # SpriteForge
 
+**Turn an animated 3D model into a playable 2D character — or build an entire population from modular 3D assets.**
+
 A local GLB/GLTF →  sprite and animated atlas baker for Unreal Engine 5. React, Three.js and Tauri 2. No accounts, hosted backend or runtime cloud service.
+
+## Character Forge
+
+Open **Character Forge** and try the animated Knight demo, or import your own GLB. Gameplay clips are mapped automatically; one build bakes every selected state with shared framing. **Play test** controls the actual baked sprites with WASD, Shift and attack. **Send to Unreal** exports a character package consumed by the extended plugin.
+
+The **Modular character factory** assembles compatible skinned parts and bone/fixed attachments, saves portable loadouts, shares animation libraries, and generates constrained unique populations with workload estimates and cancellation. **Try modular Guard demo → Use City Guard demo template → Generate variations / population** demonstrates 50 appearances from 60 compatible combinations.
+
+- [Character Forge and playable preview](docs/CHARACTER_FORGE.md)
+- [Modular factory, loadouts and populations](docs/CHARACTER_FACTORY.md)
+- [Character package metadata](docs/CHARACTER_METADATA.md)
+
+![Character Forge](docs/character-forge.png)
+
 
 ![SpriteForge workspace](docs/workspace.png)
 

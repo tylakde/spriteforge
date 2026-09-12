@@ -115,3 +115,32 @@ SpriteForge now exports Pixel Fantasy, Painted Cartoon and Pixel Realism sets. E
 Optional `appearance` metadata records a rendering version, style, pixel scale and texture filter. The updated importer applies **nearest-neighbour** filtering to Pixel Fantasy / Pixel Realism exports with pixel blocks larger than one, preserving crisp pixels. Painted Cartoon and Original PBR use bilinear filtering. The complete editable settings and shared comparison framing margin remain in the recipe snapshot.
 
 After importing the three `docs/examples/styles` exports, `tests/unreal/verify_styles.py` checks separate data assets, frame counts, saved recipes, matching pivots and actual texture filtering in Unreal. Run it through the same Python commandlet used for the runtime tests.
+
+## Character Forge packages
+
+**Send to Unreal** exports the complete character folder (ZIP in browsers). Extract it, then choose **Tools → Import SpriteForge Character…** and select `Name.character.json`. The importer preflights the manifest, every state document and atlas before writing. It reuses the original texture/material/sprite import path and creates:
+
+```text
+/Game/SpriteForge/Characters/Knight/
+  DA_Knight_Character
+  Idle/T_Knight_Idle_Atlas
+  Idle/MI_Knight_Idle_Impostor
+  Idle/DA_Knight_Idle_SpriteForge
+  Walk/…
+```
+
+The new `SpriteForgeCharacterAsset` is Blueprint-readable. State records include sprite asset references, source clip, FPS, duration, loop and return flags. The referenced sprite assets contain the frame rectangles/UVs, anchor, material and recipe.
+
+Assign **Character Asset** on the existing `SpriteForgeImpostorActor`. Call `SetState("Walk")`, `SetState("Run")`, or `PlayOneShot("Attack")`. `SetState` keeps playback when called repeatedly with the same state unless Restart is true. `PlayOneShot` restarts a mapped non-looping state. Unknown names return false. Tick advances time automatically; loops wrap at the original duration, configured one-shots return to the default, and Death holds its last frame. `AdvancePlayback(DeltaSeconds)` is exposed for deterministic/manual simulation; disable normal actor ticking if driving the clock yourself.
+
+For a ready-to-drop demonstration, place **SpriteForgeCharacterExample**, assign its Character Asset and press Play. With Demo Controls enabled it uses local player 0, its built-in camera, WASD, Shift, LMB, Space and Q/E. It demonstrates visual state/movement integration without combat or collision behaviour. For a real game, use the existing actor within your Pawn/Character and call the state APIs from your movement/gameplay logic. Only one demo actor should own demo controls in a level.
+
+Command-line character import:
+
+```powershell
+& $editor $project -run=SpriteForgeImport '-Character=C:\Exports\Knight\Knight.character.json' -unattended -nullrhi
+```
+
+`tests/unreal/verify_character.py` exercises the original ForgeKnight package: all state assets, frame advancement, attack completion, held Death, locomotion loop, heading-relative directions and example actor construction. It ran successfully in UE5.8 during the expansion, alongside the original static/animated importer/runtime tests. This was `-nullrhi`; interactive PIE keyboard input and visual rendering were not validated by that script.
+
+The standalone Sprite Baker still exports one animation per bake. Character Forge coordinates multiple such states into a shared-frame character package. See [Character metadata](CHARACTER_METADATA.md).

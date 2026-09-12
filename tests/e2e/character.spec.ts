@@ -230,6 +230,43 @@ test("modular skinned equipment, socket attachment, animation library, loadout a
     true,
   );
   await expect(cards.first()).toContainText("Exported — ready for Unreal");
+  // A portable loadout also resolves against freshly imported file objects after restart.
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Character Forge", exact: true })
+    .click();
+  await page
+    .getByLabel("Import character files")
+    .setInputFiles(
+      [
+        "Base_Human",
+        "Chest_Iron",
+        "Chest_Gold",
+        "Chest_Shadow",
+        "Weapon_Sword",
+        "Human_Combat_Animations",
+      ].map((n) => `public/samples/factory/${n}.glb`),
+    );
+  await page
+    .getByRole("button", { name: "Modular character factory", exact: true })
+    .click();
+  await expect(page.locator(".factory-library > button")).toHaveCount(6);
+  await page
+    .getByLabel("Load character loadout")
+    .setInputFiles({
+      name: "Recruit.spriteforge-character.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(loadout)),
+    });
+  await expect(page.getByLabel("Character name", { exact: true })).toHaveValue(
+    "Iron Recruit",
+  );
+  await expect(page.getByLabel("State name 4", { exact: true })).toHaveValue(
+    "Sword Attack",
+  );
+  await expect(page.getByLabel("Shared animation library")).toHaveValue(
+    loadout.animationId,
+  );
   expect(errors).toEqual([]);
 });
 
