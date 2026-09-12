@@ -39,6 +39,7 @@ import VariationSets from "../components/VariationSets";
 import CharacterForge from "../features/character/CharacterForge";
 export default function App() {
   const [workspace, setWorkspace] = useState("baker");
+  const [forgeOpened, setForgeOpened] = useState(false);
   const [forgeBusy, setForgeBusy] = useState(false);
   const [sources, setSources] = useState<AssetSource[]>([]),
     [selected, setSelected] = useState<string | null>(null),
@@ -360,7 +361,10 @@ export default function App() {
         <button
           className={workspace === "forge" ? "active" : ""}
           disabled={busy || forgeBusy}
-          onClick={() => setWorkspace("forge")}
+          onClick={() => {
+            setForgeOpened(true);
+            setWorkspace("forge");
+          }}
         >
           Character Forge
         </button>
@@ -711,14 +715,19 @@ export default function App() {
           </div>
         </footer>
       </div>
-      {workspace === "forge" && (
-        <CharacterForge
-          sources={sources}
-          source={source}
-          importFiles={importFiles}
-          selectSource={activate}
-          onBusy={setForgeBusy}
-        />
+      {forgeOpened && (
+        <div
+          className="forge-workspace"
+          style={{ display: workspace === "forge" ? "flex" : "none" }}
+        >
+          <CharacterForge
+            sources={sources}
+            source={source}
+            importFiles={importFiles}
+            selectSource={activate}
+            onBusy={setForgeBusy}
+          />
+        </div>
       )}
       {dragging && (
         <div className="drop-overlay">

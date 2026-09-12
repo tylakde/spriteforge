@@ -103,7 +103,8 @@ export default function Viewport({
         }
       }
       controls.update();
-      renderer!.render(scene, camera);
+      if (host.clientWidth && host.clientHeight)
+        renderer!.render(scene, camera);
     };
     animate();
     if (source) {

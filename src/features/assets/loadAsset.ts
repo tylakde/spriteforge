@@ -1,4 +1,12 @@
-import { Box3, Group, LoadingManager, Mesh, Texture, Vector3 } from "three";
+import {
+  Box3,
+  Group,
+  LoadingManager,
+  Mesh,
+  SkinnedMesh,
+  Texture,
+  Vector3,
+} from "three";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import type { AssetSource, LoadedAsset } from "../../types";
@@ -11,7 +19,9 @@ export function disposeObject(root: Group) {
   const geometries = new Set(),
     materials = new Set(),
     textures = new Set<Texture>();
+  const skeletons = new Set<import("three").Skeleton>();
   root.traverse((o) => {
+    if (o instanceof SkinnedMesh) skeletons.add(o.skeleton);
     if (o instanceof Mesh) {
       if (!geometries.has(o.geometry)) {
         o.geometry.dispose();
@@ -26,6 +36,7 @@ export function disposeObject(root: Group) {
         }
     }
   });
+  skeletons.forEach((s) => s.dispose());
   for (const t of textures) {
     t.dispose();
     const data = t.source?.data;

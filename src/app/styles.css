@@ -1404,3 +1404,135 @@ progress {
   align-items: center;
   gap: 6px;
 }
+.forge-entry-paths {
+  margin-bottom: 18px;
+}
+.forge-entry-paths .active {
+  color: var(--accent);
+  border-color: #c4ed8960;
+}
+.factory-panel {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #1c1f25;
+}
+.factory-panel h2 {
+  font-size: 16px;
+  margin-right: 15px;
+}
+.factory-panel summary {
+  padding: 12px 0;
+  cursor: pointer;
+}
+.factory-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+.factory-slots > div {
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 6px;
+}
+.factory-slots > div > label:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.factory-slots > div > label {
+  margin-right: 12px;
+}
+.factory-library {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 8px;
+  max-height: 260px;
+  overflow: auto;
+}
+.factory-library button {
+  align-items: flex-start;
+  flex-direction: column;
+  white-space: normal;
+  text-align: left;
+  padding: 12px;
+}
+.factory-library small {
+  color: var(--muted);
+}
+.library-animation {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 400px;
+  margin: 16px 0;
+}
+.library-filters {
+  margin-bottom: 12px;
+}
+.library-filters input:not([type="checkbox"]) {
+  width: 125px;
+}
+.asset-editor {
+  margin-top: 16px;
+  padding: 16px;
+  background: #14161b;
+  border-radius: 6px;
+}
+.asset-editor label,
+.population-heading + .forge-toolbar label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.xyz-inputs {
+  display: flex;
+  gap: 4px;
+}
+.population-heading {
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+  padding-top: 16px;
+}
+.variation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.character-variation {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-width: 0;
+}
+.character-variation > button {
+  display: block;
+  width: 100%;
+  background: #202932;
+}
+.character-variation img {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+}
+.character-variation > input {
+  width: 100%;
+  margin: 8px 0;
+}
+.character-variation details label {
+  display: block;
+  padding: 3px;
+}
+.character-variation small {
+  display: block;
+  margin-top: 10px;
+  color: var(--accent);
+}
+.forge-workspace {
+  flex: 1;
+  min-height: 0;
+}

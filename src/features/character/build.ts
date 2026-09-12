@@ -70,50 +70,56 @@ export async function buildCharacter(
         }
       }
     }
+    mixer.stopAllAction();
+    mixer.uncacheRoot(asset.root);
+    const states: CharacterState[] = [],
+      atlases: Record<string, Blob> = {};
+    for (const [i, mapping] of selected.entries()) {
+      check();
+      const generation = await renderSequence(
+        source,
+        fixedRecipe,
+        mapping.clipIndex,
+        (value, label) =>
+          progress(
+            0.1 + (0.9 * (i + value)) / selected.length,
+            `${mapping.name}: ${label}`,
+          ),
+        signal,
+        {
+          load: async () => ({ ...asset, dispose: () => {} }),
+          bounds,
+          atlasOnly: true,
+        },
+      );
+      const stem = safeName(`${safeName(name)}_${safeName(mapping.name)}`),
+        folder = safeName(mapping.name);
+      generation.metadata.asset = stem;
+      generation.metadata.atlas.file = `${stem}_Atlas.png`;
+      const atlas = `${folder}/${generation.metadata.atlas.file}`;
+      atlases[atlas] = generation.atlas;
+      states.push({
+        name: mapping.name,
+        clip: mapping.clipName,
+        fps: fixedRecipe.fps,
+        loop: mapping.loop,
+        returnToDefault: mapping.returnToDefault,
+        duration: mapping.duration,
+        frameCount: sampleTimes(mapping.duration, fixedRecipe.fps).length,
+        atlas,
+        metadata: `${folder}/${stem}.json`,
+        sprite: generation.metadata,
+      });
+      disposeGeneration(generation);
+    }
+    check();
+    progress(1, "Character ready — play test or send to Unreal");
+    return { metadata: characterMetadata(name, defaultState, states), atlases };
   } finally {
     mixer.stopAllAction();
     mixer.uncacheRoot(asset.root);
     asset.dispose();
   }
-  const states: CharacterState[] = [],
-    atlases: Record<string, Blob> = {};
-  for (const [i, mapping] of selected.entries()) {
-    check();
-    const generation = await renderSequence(
-      source,
-      fixedRecipe,
-      mapping.clipIndex,
-      (value, label) =>
-        progress(
-          0.1 + (0.9 * (i + value)) / selected.length,
-          `${mapping.name}: ${label}`,
-        ),
-      signal,
-      { load: loader, bounds, atlasOnly: true },
-    );
-    const stem = `${safeName(name)}_${safeName(mapping.name)}`,
-      folder = safeName(mapping.name);
-    generation.metadata.asset = stem;
-    generation.metadata.atlas.file = `${stem}_Atlas.png`;
-    const atlas = `${folder}/${generation.metadata.atlas.file}`;
-    atlases[atlas] = generation.atlas;
-    states.push({
-      name: mapping.name,
-      clip: mapping.clipName,
-      fps: fixedRecipe.fps,
-      loop: mapping.loop,
-      returnToDefault: mapping.returnToDefault,
-      duration: mapping.duration,
-      frameCount: sampleTimes(mapping.duration, fixedRecipe.fps).length,
-      atlas,
-      metadata: `${folder}/${stem}.json`,
-      sprite: generation.metadata,
-    });
-    disposeGeneration(generation);
-  }
-  check();
-  progress(1, "Character ready — play test or send to Unreal");
-  return { metadata: characterMetadata(name, defaultState, states), atlases };
 }
 export async function characterFiles(build: CharacterBuild) {
   const encode = (value: unknown) =>

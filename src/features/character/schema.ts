@@ -99,6 +99,8 @@ export function validateMappings(
   defaultState: string,
 ) {
   const selected = mappings.filter((m) => m.enabled);
+  if (selected.length > 256)
+    throw new Error("Characters support at most 256 states.");
   if (!selected.length) throw new Error("Select at least one animation state.");
   const names = new Set<string>();
   for (const state of selected) {

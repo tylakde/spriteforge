@@ -12,7 +12,12 @@ import {
 import { loadAsset } from "../assets/loadAsset";
 import { calculateFraming, renderCamera } from "../renderer/framing";
 import { lighting } from "../renderer/lighting";
-import { buildAtlas, canvasBlob, makeMetadata } from "../atlas/atlas";
+import {
+  buildAtlas,
+  canvasBlob,
+  makeMetadata,
+  createAtlasWriter,
+} from "../atlas/atlas";
 import { sampleTimes, yieldToUI } from "../../lib/math";
 import { validateRecipe } from "../recipes/recipes";
 import type {
@@ -77,6 +82,7 @@ export async function renderSequence(
     mixer: AnimationMixer | undefined;
   const thumbnails: string[] = [];
   let restoreMaterials = () => {};
+  let atlasWriter: ReturnType<typeof createAtlasWriter> | undefined;
   try {
     const clip = clipIndex === null ? undefined : asset.animations[clipIndex];
     if (clipIndex !== null && !clip)
@@ -119,6 +125,7 @@ export async function renderSequence(
       (1 - groundInClip.y) / 2,
       clip?.duration || 0,
     );
+    if (options?.atlasOnly) atlasWriter = createAtlasWriter(metadata);
     restoreMaterials = prepareStyleMaterials(asset.root, recipe);
     const pixelScale = effectivePixelScale(recipe);
     const renderSize = recipe.cellSize / pixelScale;
@@ -203,7 +210,8 @@ export async function renderSequence(
       }
       outputCtx.clearRect(0, 0, recipe.cellSize, recipe.cellSize);
       outputCtx.drawImage(canvas, 0, 0, recipe.cellSize, recipe.cellSize);
-      frames.push(await canvasBlob(output));
+      if (atlasWriter) atlasWriter.draw(frame.index, output);
+      else frames.push(await canvasBlob(output));
       if (!options?.atlasOnly) {
         thumbCtx.clearRect(0, 0, 96, 96);
         thumbCtx.imageSmoothingEnabled = pixelScale === 1;
@@ -218,7 +226,9 @@ export async function renderSequence(
     }
     check();
     onProgress(0.93, "Packing atlas");
-    const atlas = await buildAtlas(frames, metadata);
+    const atlas = atlasWriter
+      ? await atlasWriter.finish()
+      : await buildAtlas(frames, metadata);
     canvas.width =
       canvas.height =
       output.width =
@@ -242,6 +252,7 @@ export async function renderSequence(
   } finally {
     mixer?.stopAllAction();
     mixer?.uncacheRoot(asset.root);
+    atlasWriter?.dispose();
     target?.dispose();
     renderer?.dispose();
     renderer?.forceContextLoss();

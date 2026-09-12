@@ -27,7 +27,7 @@ export function advancePlayback(
   let time = current.time + Math.max(0, dt);
   if (time >= state.duration) {
     if (state.loop) time %= state.duration;
-    else if (state.returnToDefault)
+    else if (state.returnToDefault && state.name !== character.defaultState)
       return { state: character.defaultState, time: 0, finished: false };
     else return { ...current, time: state.duration, finished: true };
   }

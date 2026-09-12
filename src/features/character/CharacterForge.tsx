@@ -11,6 +11,11 @@ import {
 } from "./schema";
 import { buildCharacter, exportCharacter, type CharacterBuild } from "./build";
 import PlayTest from "./PlayTest";
+import { useFactory } from "./useFactory";
+import FactoryPanel from "./FactoryPanel";
+import type { Loadout } from "./factory";
+import { useStore } from "../../stores/useStore";
+import { safeName } from "../../lib/math";
 import { allStyles } from "../styles/styles";
 
 export default function CharacterForge({
@@ -26,6 +31,11 @@ export default function CharacterForge({
   selectSource: (source: AssetSource) => void;
   onBusy: (value: boolean) => void;
 }) {
+  const factory = useFactory(sources, source);
+  const [name, setName] = useState("Character"),
+    [ready, setReady] = useState(false);
+  const pendingLoadout = useRef<Loadout | null>(null),
+    clipSignature = useRef("");
   const [recipe, setRecipe] = useState<RenderRecipe>({
     ...baseRecipe,
     cellSize: 256,
@@ -49,27 +59,60 @@ export default function CharacterForge({
     folder = useRef<HTMLInputElement>(null);
   useEffect(() => () => abort.current?.abort(), []);
   useEffect(() => {
+    clipSignature.current = "";
+    setName(safeName(source?.name ?? "Character"));
     setMappings([]);
     setClips([]);
     setClip(null);
     setBuilt(null);
     setError("");
   }, [source]);
+  useEffect(() => {
+    setBuilt(null);
+    setReady(false);
+  }, [source, factory.loader]);
   const report = (message: string) => setError(message);
+  useEffect(() => {
+    if (factory.error) setError(factory.error);
+  }, [factory.error]);
   const loaded = (asset: LoadedAsset) => {
     const clips = asset.animations.map((c) => ({
       name: c.name,
       duration: c.duration,
     }));
     setClips(clips);
-    const next = mapAnimations(clips);
-    setMappings(next);
-    setDefault(
-      next.find((s) => s.name === "Idle")?.name ?? next[0]?.name ?? "Idle",
-    );
-    setClip(next[0]?.clipIndex ?? null);
+    setReady(true);
+    const signature = JSON.stringify(clips);
+    const pending = pendingLoadout.current;
+    if (pending) {
+      pendingLoadout.current = null;
+      if (
+        pending.mappings.some(
+          (m) =>
+            clips[m.clipIndex]?.name !== m.clipName ||
+            clips[m.clipIndex]?.duration !== m.duration,
+        )
+      ) {
+        report("Loadout animation clips do not match the imported library.");
+        setReady(false);
+        return;
+      }
+      setMappings(pending.mappings);
+      setDefault(pending.defaultState);
+      setRecipe(pending.recipe);
+      setName(pending.name);
+      setClip(pending.mappings[0]?.clipIndex ?? null);
+    } else if (signature !== clipSignature.current) {
+      const next = mapAnimations(clips);
+      setMappings(next);
+      setDefault(
+        next.find((s) => s.name === "Idle")?.name ?? next[0]?.name ?? "Idle",
+      );
+      setClip(next[0]?.clipIndex ?? null);
+    }
+    clipSignature.current = signature;
     setStatus(
-      `${clips.length} animations detected · ${next.length} gameplay states mapped`,
+      `${clips.length} animations detected · ${clips.length} gameplay states mapped`,
     );
   };
   const estimate = useMemo(() => {
@@ -105,6 +148,8 @@ export default function CharacterForge({
           setStatus(s);
         },
         abort.current.signal,
+        factory.loader,
+        name,
       );
       setBuilt(result);
       setPlay(true);
@@ -133,6 +178,49 @@ export default function CharacterForge({
       onBusy(false);
     }
   };
+  const run = async (
+    task: (
+      signal: AbortSignal,
+      progress: (p: number, s: string) => void,
+    ) => Promise<void>,
+  ) => {
+    if (busy) return;
+    setBusy(true);
+    onBusy(true);
+    setError("");
+    abort.current = new AbortController();
+    try {
+      await task(abort.current.signal, (p, s) => {
+        setProgress(p);
+        setStatus(s);
+      });
+    } catch (e) {
+      report((e as Error).message);
+    } finally {
+      setBusy(false);
+      onBusy(false);
+    }
+  };
+  const loadLoadout = (loadout: Loadout) => {
+    const required = [
+      loadout.baseId,
+      ...loadout.parts.map((p) => p.assetId),
+      ...(loadout.animationId ? [loadout.animationId] : []),
+    ];
+    const missing = required.filter(
+      (id) => !factory.library.some((a) => a.id === id),
+    );
+    if (missing.length)
+      throw new Error(
+        `Reimport the loadout source files first: ${missing.map((id) => loadout.assets.find((a) => a.id === id)?.file ?? id).join(", ")}`,
+      );
+    const base = factory.library.find((a) => a.id === loadout.baseId)!;
+    pendingLoadout.current = loadout;
+    factory.setFactory(true);
+    factory.setParts(loadout.parts);
+    factory.setAnimationId(loadout.animationId);
+    selectSource(base.source);
+  };
   return (
     <section className="character-forge">
       <div className="forge-heading">
@@ -143,9 +231,37 @@ export default function CharacterForge({
         </div>
         <span className="forge-pill">All local · deterministic baking</span>
       </div>
+      <div className="forge-toolbar forge-entry-paths">
+        <button
+          disabled={busy}
+          className={!factory.factory ? "active" : ""}
+          onClick={() => factory.setFactory(false)}
+        >
+          One-click character
+        </button>
+        <button
+          disabled={busy}
+          className={factory.factory ? "active" : ""}
+          onClick={() => factory.setFactory(true)}
+        >
+          Modular character factory
+        </button>
+      </div>
       <div className="forge-columns">
         <aside className="forge-panel">
           <h2>Character</h2>
+          <label>
+            Name
+            <input
+              aria-label="Character name"
+              disabled={busy}
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setBuilt(null);
+              }}
+            />
+          </label>
           <button
             className="primary"
             disabled={busy}
@@ -213,6 +329,41 @@ export default function CharacterForge({
           >
             Try animated Knight demo
           </button>
+          <button
+            disabled={busy}
+            onClick={async () => {
+              try {
+                const names = [
+                  "Base_Human",
+                  "Chest_Iron",
+                  "Chest_Gold",
+                  "Chest_Shadow",
+                  "Weapon_Sword",
+                  "Human_Combat_Animations",
+                  ...Array.from(
+                    { length: 4 },
+                    (_, i) => `Helmet_Guard_${i + 1}`,
+                  ),
+                  ...Array.from({ length: 5 }, (_, i) => `Hair_Guard_${i + 1}`),
+                ];
+                const files = await Promise.all(
+                  names.map(async (name) => {
+                    const r = await fetch(`/samples/factory/${name}.glb`);
+                    if (!r.ok) throw new Error("Factory sample unavailable");
+                    return new File([await r.blob()], `${name}.glb`);
+                  }),
+                );
+                factory.setFactory(true);
+                factory.setParts([]);
+                factory.setAnimationId(null);
+                importFiles(files);
+              } catch (e) {
+                report((e as Error).message);
+              }
+            }}
+          >
+            Try modular Guard demo
+          </button>
           <p>
             {clips.length} animations detected
             <br />
@@ -226,6 +377,7 @@ export default function CharacterForge({
         <div className="forge-preview">
           <Viewport
             source={source}
+            loader={factory.loader}
             clipIndex={clip}
             playing={!busy}
             time={0}
@@ -300,14 +452,15 @@ export default function CharacterForge({
                     directionCount: profile.directionCount,
                     cellSize: profile.cellSize,
                   });
-                  setMappings((m) =>
-                    m.map((s) => ({
-                      ...s,
-                      enabled:
-                        profile.states === null ||
-                        (profile.states as readonly string[]).includes(s.name),
-                    })),
-                  );
+                  const next = mappings.map((s) => ({
+                    ...s,
+                    enabled:
+                      profile.states === null ||
+                      (profile.states as readonly string[]).includes(s.name),
+                  }));
+                  setMappings(next);
+                  if (!next.some((s) => s.enabled && s.name === defaultState))
+                    setDefault(next.find((s) => s.enabled)?.name ?? "Idle");
                 }}
               >
                 <option value="">Custom / all states</option>
@@ -318,6 +471,22 @@ export default function CharacterForge({
             </label>
             <details>
               <summary>Advanced rendering</summary>
+              <button
+                onClick={() => {
+                  const r = useStore.getState().recipe;
+                  patchRecipe({
+                    ...r,
+                    directionCount: [4, 8, 16].includes(r.directionCount)
+                      ? r.directionCount
+                      : 8,
+                    cellSize: r.cellSize === 64 ? 128 : r.cellSize,
+                    anchor: "ground",
+                    background: "transparent",
+                  });
+                }}
+              >
+                Use Sprite Baker recipe
+              </button>
               <label>
                 FPS
                 <input
@@ -462,6 +631,20 @@ export default function CharacterForge({
           ))}
         </fieldset>
       </details>
+      {factory.factory && (
+        <FactoryPanel
+          factory={factory}
+          recipe={recipe}
+          mappings={mappings}
+          defaultState={defaultState}
+          name={name}
+          busy={busy}
+          run={run}
+          onLoad={loadLoadout}
+          onBuilt={setBuilt}
+          report={report}
+        />
+      )}
       {error && (
         <p className="forge-error" role="alert">
           {error}
@@ -501,6 +684,8 @@ export default function CharacterForge({
             className="primary"
             disabled={
               !source ||
+              !ready ||
+              (factory.factory && !factory.base) ||
               busy ||
               !estimate.value ||
               (estimate.value.large && !large)

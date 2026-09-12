@@ -101,21 +101,39 @@ export function canvasBlob(canvas: HTMLCanvasElement): Promise<Blob> {
     ),
   );
 }
-export async function buildAtlas(frames: Blob[], metadata: Metadata) {
+export function createAtlasWriter(metadata: Metadata) {
   const canvas = document.createElement("canvas");
   canvas.width = metadata.atlas.width;
   canvas.height = metadata.atlas.height;
   const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas unavailable.");
+  if (!ctx) {
+    canvas.width = canvas.height = 1;
+    throw new Error("Canvas unavailable.");
+  }
+  return {
+    draw(index: number, image: CanvasImageSource) {
+      const r = metadata.frames[index].rect;
+      ctx.drawImage(image, r.x, r.y);
+    },
+    finish: () => canvasBlob(canvas),
+    dispose() {
+      canvas.width = canvas.height = 1;
+    },
+  };
+}
+export async function buildAtlas(frames: Blob[], metadata: Metadata) {
+  const writer = createAtlasWriter(metadata);
   try {
     for (let i = 0; i < frames.length; i++) {
       const bmp = await createImageBitmap(frames[i]);
-      const r = metadata.frames[i].rect;
-      ctx.drawImage(bmp, r.x, r.y);
-      bmp.close();
+      try {
+        writer.draw(i, bmp);
+      } finally {
+        bmp.close();
+      }
     }
-    return await canvasBlob(canvas);
+    return await writer.finish();
   } finally {
-    canvas.width = canvas.height = 1;
+    writer.dispose();
   }
 }
